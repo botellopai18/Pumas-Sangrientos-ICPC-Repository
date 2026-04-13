@@ -1,21 +1,85 @@
-\documentclass[10pt, landscape, twocolumn]{article}
-\usepackage[utf8]{inputenc}
-\usepackage{listings}
-\usepackage{color}
-\usepackage[margin=0.5in]{geometry}
+\documentclass[10pt, a4paper, landscape]{article}
 
+% --- Paquetes Esenciales ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{multicol}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+
+% --- Configuración de Página (Márgenes tipo ICPC) ---
+\geometry{top=1.2cm, bottom=1.2cm, left=1cm, right=1cm}
+\columnseprule = 0.4pt % Línea divisoria entre columnas
+
+% --- Configuración de Colores (Estilo Morass/KACTL) ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0.0,0.0,0.8}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+
+% --- Estilo de Código (Listings) ---
 \lstset{
     language=C++,
-    basicstyle=\ttfamily\scriptsize,
-    keywordstyle=\color{blue},
-    commentstyle=\color{gray},
-    breaklines=true,
+    basicstyle=\ttfamily\scriptsize, % Fuente pequeña para que quepa más
+    keywordstyle=\color{codeblue}\bfseries,
+    commentstyle=\color{codegray}\itshape,
+    stringstyle=\color{codegreen},
+    breaklines=true,                % Salto de línea automático
+    showstringspaces=false,
     tabsize=2,
-    showstringspaces=false
+    frame=single,                   % Recuadro alrededor del código
+    rulecolor=\color{black!30},
+    numbers=left,                   % Números de línea a la izquierda
+    numberstyle=\tiny\color{codegray},
+    stepnumber=1,
+    numbersep=5pt,
+    firstnumber=1
 }
 
+% --- Encabezado y Pie de Página ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Pumas Sangrientos - Universidad Nacional Autónoma de México}
+\fancyhead[R]{Página \thepage}
+
 \begin{document}
-\tableofcontents
-\newpage
-% AQUÍ EL SCRIPT INSERTARÁ EL CÓDIGO
+
+% --- Título Compacto ---
+\begin{center}
+    {\Huge \textbf{Pumas Sangrientos: Team Reference Document}} \\
+    \textit{ICPC Training - 2024}
+\end{center}
+
+\begin{multicols*}{2} % El '*' mantiene las columnas llenas antes de pasar a la siguiente
+    \tableofcontents
+    \vspace{1cm}
+
+    % --- SECCIÓN DE EJEMPLO ---
+    % Nota: El script de Python debería insertar las secciones aquí
+    \section{Data Structures}
+    
+    \subsection{Segment Tree (Lazy Propagation)}
+    % Aquí se enlaza el archivo local
+    % \lstinputlisting{code/data_structures/seg_tree.cpp}
+    \begin{lstlisting}
+    // Ejemplo rápido de cómo se verá el código
+    void build(int node, int start, int end) {
+        if(start == end) {
+            tree[node] = A[start];
+            return;
+        }
+        int mid = (start + end) / 2;
+        build(2*node, start, mid);
+        build(2*node+1, mid+1, end);
+        tree[node] = tree[2*node] + tree[2*node+1];
+    }
+    \end{lstlisting}
+
+    \section{Graphs}
+    \subsection{Dinic's Algorithm}
+    % \lstinputlisting{code/graphs/dinic.cpp}
+
+\end{multicols*}
 \end{document}
