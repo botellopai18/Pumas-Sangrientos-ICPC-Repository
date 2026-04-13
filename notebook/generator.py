@@ -1,96 +1,110 @@
 import os
 import re
+import subprocess
 
 # Configuración de rutas
 CODE_DIR = 'code'
 TEMPLATE_FILE = 'template.tex'
 OUTPUT_FILE = 'notebook.tex'
 
-def parse_metadata(filepath):
-    """Extrae la Descripción y el Autor de los comentarios del código."""
-    description = "Sin descripción."
-    author = "Desconocido"
-    
-    try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            content = f.read()
-            
-            # Busca el primer bloque de comentarios /** ... */
-            match = re.search(r'/\*\*(.*?)\*/', content, re.DOTALL)
-            if match:
-                block = match.group(1)
-                
-                # Extrae el Author
-                author_match = re.search(r'\*\s*Author:\s*(.*)', block, re.IGNORECASE)
-                if author_match:
-                    author = author_match.group(1).strip()
-                
-                # Extrae el Description
-                desc_match = re.search(r'\*\s*Description:\s*(.*)', block, re.IGNORECASE)
-                if desc_match:
-                    description = desc_match.group(1).strip()
-                    
-    except Exception as e:
-        print(f"Error procesando el archivo {filepath}: {e}")
-        
-    return description, author
+# Patrones de "Boilerplate" que queremos eliminar de los códigos específicos
+BOILERPLATE_PATTERNS = [
+    r'#include\s*<.*>',            # Librerías
+    r'using\s+namespace\s+std;',    # Namespace
+    r'typedef\s+.*;',               # Typedefs
+    r'#define\s+.*',                # Macros
+    r'void\s+fast_io\s*\([^)]*\)\s*\{[^\}]*\}', # Función fast_io completa
+    r'const\s+ll\s+m\s*=\s*.*;',    # Opcional: constantes comunes como el MOD
+    r'ios_base::sync_with_stdio.*;', # Líneas de fast_io sueltas
+    r'cin\.tie.*;',
+    r'cout\.tie.*;'
+]
 
-def clean_title(filename):
-    """Limpia el nombre del archivo para usarlo como título en el índice."""
-    name = os.path.splitext(filename)[0]
-    # Reemplaza guiones bajos por espacios y capitaliza
-    return name.replace('_', ' ').title()
+def clean_code_content(content, is_template=False):
+    """Elimina metadatos y código repetitivo (boilerplate)."""
+    # 1. Eliminar el bloque de comentarios de metadatos /** ... */
+    content = re.sub(r'/\*\*.*?\*/', '', content, flags=re.DOTALL)
+    
+    if is_template:
+        return content.strip()
+
+    # 2. Eliminar líneas de boilerplate definidas arriba
+    for pattern in BOILERPLATE_PATTERNS:
+        content = re.sub(pattern, '', content, flags=re.IGNORECASE)
+
+    # 3. Eliminar la función main() estándar si está vacía o solo tiene solve()
+    # Este regex busca un main que solo llame a fast_io, solve o tenga return 0
+    main_pattern = r'int\s+main\s*\(\s*\)\s*\{[^\}]*\}'
+    content = re.sub(main_pattern, '', content, flags=re.DOTALL)
+
+    # Limpieza final de saltos de línea excesivos
+    content = re.sub(r'\n\s*\n', '\n', content)
+    return content.strip()
+
+def parse_metadata(content):
+    """Extrae Título, Descripción y Autor de los comentarios."""
+    title, description, author = None, "Sin descripción.", "Desconocido"
+    match = re.search(r'/\*\*(.*?)\*/', content, re.DOTALL)
+    if match:
+        block = match.group(1)
+        t_match = re.search(r'\*\s*Title:\s*(.*)', block, re.IGNORECASE)
+        if t_match: title = t_match.group(1).strip()
+        a_match = re.search(r'\*\s*Author:\s*(.*)', block, re.IGNORECASE)
+        if a_match: author = a_match.group(1).strip()
+        d_match = re.search(r'\*\s*Description:\s*(.*)', block, re.IGNORECASE)
+        if d_match: description = d_match.group(1).strip()
+    return title, description, author
+
+def compile_and_clean():
+    """Compila y limpia archivos temporales."""
+    print("Compilando PDF...")
+    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
+    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
+    
+    base = os.path.splitext(OUTPUT_FILE)[0]
+    for ext in ['.aux', '.log', '.toc', '.out', '.tex']:
+        if os.path.exists(base + ext): os.remove(base + ext)
+    print("¡Proceso completado!")
 
 def generate_notebook():
-    if not os.path.exists(CODE_DIR):
-        print(f"Error: No se encontró el directorio '{CODE_DIR}'.")
-        return
-
+    if not os.path.exists(CODE_DIR): return
     latex_content = ""
     
-    # 1. Obtener y ordenar las carpetas (Secciones)
     directories = sorted([d for d in os.listdir(CODE_DIR) if os.path.isdir(os.path.join(CODE_DIR, d))])
     
     for folder in directories:
-        # Crea la sección en LaTeX
-        section_name = clean_title(folder)
-        latex_content += f"\\section{{{section_name}}}\n\n"
-        
+        latex_content += f"\\section{{{folder.replace('_', ' ').title()}}}\n\n"
         folder_path = os.path.join(CODE_DIR, folder)
-        # 2. Obtener y ordenar los archivos (Subsecciones)
         files = sorted([f for f in os.listdir(folder_path) if f.endswith(('.cpp', '.py', '.java'))])
         
         for file in files:
-            file_path = os.path.join(folder_path, file).replace('\\', '/') # Ajuste para rutas en Windows/Linux
-            title = clean_title(file)
+            file_path = os.path.join(folder_path, file)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                raw_content = f.read()
             
-            # Extraer metadata
-            desc, author = parse_metadata(file_path)
+            # Detectar si es el archivo de plantilla principal
+            is_main_template = "template" in file.lower()
             
-            # 3. Crear la estructura en LaTeX
+            # Obtener metadatos y limpiar el código
+            m_title, desc, author = parse_metadata(raw_content)
+            clean_code = clean_code_content(raw_content, is_template=is_main_template)
+            
+            title = m_title if m_title else file.replace('_', ' ').replace('.cpp', '').title()
+            
+            # Escribir el código limpio a un archivo temporal para lstinputlisting
+            # o usar el comando directo de listings
             latex_content += f"\\subsection{{{title}}}\n"
             latex_content += f"\\textbf{{Autor:}} {author} \\\\\n"
-            latex_content += f"\\textbf{{Descripción:}} {desc}\n\n" # La descripción puede contener $$ nativos de LaTeX
-            latex_content += f"\\vspace{{0.2cm}}\n"
-            latex_content += f"\\lstinputlisting{{{file_path}}}\n\n"
+            latex_content += f"\\textbf{{Descripción:}} {desc}\n\n"
+            latex_content += f"\\begin{{lstlisting}}\n{clean_code}\n\\end{{lstlisting}}\n\n"
 
-    # 4. Leer la plantilla y fusionar
-    try:
-        with open(TEMPLATE_FILE, 'r', encoding='utf-8') as f:
-            template = f.read()
-    except Exception as e:
-        print(f"Error leyendo la plantilla {TEMPLATE_FILE}: {e}")
-        return
-
-    # Inyectar el código generado en la marca especial
-    final_latex = template.replace('% == GENERATOR_CONTENT ==', latex_content)
+    with open(TEMPLATE_FILE, 'r', encoding='utf-8') as f:
+        template = f.read()
     
-    # 5. Guardar el archivo final
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        f.write(final_latex)
-        
-    print(f"¡Éxito! Archivo generado: {OUTPUT_FILE}")
-    print("Ahora puedes compilar tu PDF ejecutando: pdflatex notebook.tex")
+        f.write(template.replace('% == GENERATOR_CONTENT ==', latex_content))
+    
+    compile_and_clean()
 
 if __name__ == '__main__':
     generate_notebook()
