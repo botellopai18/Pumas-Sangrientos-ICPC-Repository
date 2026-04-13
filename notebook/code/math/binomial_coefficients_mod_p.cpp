@@ -1,6 +1,7 @@
 /**
  * Description: Calcula coeficientes binomiales (nCr) usando factoriales precomputados e inversos modulares. Requiere que m sea primo.
- * Author: botello
+ * Author: botellot
+ * Title: Binomial Coefficients Modulo Prime
  */
 #include <bits/stdc++.h>
 using namespace std;
