@@ -1,0 +1,15 @@
+# Compilados
+*.exe
+*.out
+*.o
+
+# Archivos de LaTeX
+*.aux
+*.log
+*.toc
+*.pdf
+*.out
+
+# Mac/Windows basura
+.DS_Store
+Thumbs.db
