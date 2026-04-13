@@ -7,8 +7,8 @@
 *.aux
 *.log
 *.toc
-*.pdf
 *.out
+*.synctex.gz
 
 # Mac/Windows basura
 .DS_Store
