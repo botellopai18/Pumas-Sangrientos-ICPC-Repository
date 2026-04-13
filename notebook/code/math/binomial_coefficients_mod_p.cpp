@@ -1,6 +1,6 @@
 /**
  * Description: Calcula coeficientes binomiales (nCr) usando factoriales precomputados e inversos modulares. Requiere que m sea primo.
- * Author: [Tu Nombre o Nombre del Puma]
+ * Author: botello
  */
 #include <bits/stdc++.h>
 using namespace std;

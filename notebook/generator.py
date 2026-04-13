@@ -1,62 +1,96 @@
 import os
 import re
 
-CODE_DIR = "./code"
-TEMPLATE_FILE = "template.tex"
-OUTPUT_FILE = "notebook.tex"
+# Configuración de rutas
+CODE_DIR = 'code'
+TEMPLATE_FILE = 'template.tex'
+OUTPUT_FILE = 'notebook.tex'
 
-def get_metadata(filepath):
-    """Extrae la descripción y el autor de los comentarios del .cpp"""
-    desc = "Sin descripción."
-    author = "Equipo"
+def parse_metadata(filepath):
+    """Extrae la Descripción y el Autor de los comentarios del código."""
+    description = "Sin descripción."
+    author = "Desconocido"
+    
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-            # Buscamos usando expresiones regulares
-            d_match = re.search(r"Description:\s*(.*)", content)
-            a_match = re.search(r"Author:\s*(.*)", content)
-            if d_match: desc = d_match.group(1).strip()
-            if a_match: author = a_match.group(1).strip()
-    except:
-        pass
-    return desc, author
+            
+            # Busca el primer bloque de comentarios /** ... */
+            match = re.search(r'/\*\*(.*?)\*/', content, re.DOTALL)
+            if match:
+                block = match.group(1)
+                
+                # Extrae el Author
+                author_match = re.search(r'\*\s*Author:\s*(.*)', block, re.IGNORECASE)
+                if author_match:
+                    author = author_match.group(1).strip()
+                
+                # Extrae el Description
+                desc_match = re.search(r'\*\s*Description:\s*(.*)', block, re.IGNORECASE)
+                if desc_match:
+                    description = desc_match.group(1).strip()
+                    
+    except Exception as e:
+        print(f"Error procesando el archivo {filepath}: {e}")
+        
+    return description, author
 
-def generate_tex():
-    if not os.path.exists(TEMPLATE_FILE):
-        print("Error: No existe template.tex")
+def clean_title(filename):
+    """Limpia el nombre del archivo para usarlo como título en el índice."""
+    name = os.path.splitext(filename)[0]
+    # Reemplaza guiones bajos por espacios y capitaliza
+    return name.replace('_', ' ').title()
+
+def generate_notebook():
+    if not os.path.exists(CODE_DIR):
+        print(f"Error: No se encontró el directorio '{CODE_DIR}'.")
         return
 
-    with open(TEMPLATE_FILE, 'r', encoding='utf-8') as f:
-        template_lines = f.readlines()
+    latex_content = ""
+    
+    # 1. Obtener y ordenar las carpetas (Secciones)
+    directories = sorted([d for d in os.listdir(CODE_DIR) if os.path.isdir(os.path.join(CODE_DIR, d))])
+    
+    for folder in directories:
+        # Crea la sección en LaTeX
+        section_name = clean_title(folder)
+        latex_content += f"\\section{{{section_name}}}\n\n"
+        
+        folder_path = os.path.join(CODE_DIR, folder)
+        # 2. Obtener y ordenar los archivos (Subsecciones)
+        files = sorted([f for f in os.listdir(folder_path) if f.endswith(('.cpp', '.py', '.java'))])
+        
+        for file in files:
+            file_path = os.path.join(folder_path, file).replace('\\', '/') # Ajuste para rutas en Windows/Linux
+            title = clean_title(file)
+            
+            # Extraer metadata
+            desc, author = parse_metadata(file_path)
+            
+            # 3. Crear la estructura en LaTeX
+            latex_content += f"\\subsection{{{title}}}\n"
+            latex_content += f"\\textbf{{Autor:}} {author} \\\\\n"
+            latex_content += f"\\textbf{{Descripción:}} {desc}\n\n" # La descripción puede contener $$ nativos de LaTeX
+            latex_content += f"\\vspace{{0.2cm}}\n"
+            latex_content += f"\\lstinputlisting{{{file_path}}}\n\n"
 
+    # 4. Leer la plantilla y fusionar
+    try:
+        with open(TEMPLATE_FILE, 'r', encoding='utf-8') as f:
+            template = f.read()
+    except Exception as e:
+        print(f"Error leyendo la plantilla {TEMPLATE_FILE}: {e}")
+        return
+
+    # Inyectar el código generado en la marca especial
+    final_latex = template.replace('% == GENERATOR_CONTENT ==', latex_content)
+    
+    # 5. Guardar el archivo final
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
-        for line in template_lines:
-            if "% --- SECCIÓN DE EJEMPLO ---" in line:
-                # Escanear carpetas
-                for root, dirs, files in os.walk(CODE_DIR):
-                    cpp_files = [f for f in files if f.endswith('.cpp')]
-                    if not cpp_files: continue
-                    
-                    section_name = os.path.basename(root).replace("_", " ").title()
-                    f.write(f"\\section{{{section_name}}}\n")
-                    
-                    for cpp_file in sorted(cpp_files):
-                        path = os.path.join(root, cpp_file).replace("\\", "/")
-                        algo_name = cpp_file.replace(".cpp", "").replace("_", " ").title()
-                        
-                        # Obtener metadatos
-                        desc, author = get_metadata(path)
-                        
-                        # Escribir en LaTeX con formato bonito
-                        f.write(f"\\subsection{{{algo_name}}}\n")
-                        f.write(f"\\textbf{{Autor:}} {author} \\\\ \n")
-                        f.write(f"\\textit{{ {desc} }} \\\\ \n")
-                        f.write(f"\\lstinputlisting{{{path}}}\n")
-                        f.write(f"\\vspace{{0.5cm}}\n")
-                continue
-            f.write(line)
+        f.write(final_latex)
+        
+    print(f"¡Éxito! Archivo generado: {OUTPUT_FILE}")
+    print("Ahora puedes compilar tu PDF ejecutando: pdflatex notebook.tex")
 
-    print(f"✅ Notebook generado con autores y descripciones.")
-
-if __name__ == "__main__":
-    generate_tex()
+if __name__ == '__main__':
+    generate_notebook()
