@@ -7,7 +7,6 @@
 *.aux
 *.log
 *.toc
-*.pdf
 *.out
 
 # Mac/Windows basura
