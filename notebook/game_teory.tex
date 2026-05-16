@@ -1,0 +1,51 @@
+\section{Teoría de Juegos Imparciales y Teorema de Sprague-Grundy}
+
+\subsection{Conceptos Fundamentales de Posiciones}
+En la convención de juego normal (el último en mover gana), definimos de forma recursiva los estados del juego:
+\begin{itemize}
+    \item \textbf{Estados Terminales:} Son posiciones $P$ (puesto que el jugador actual no puede realizar movimientos y ha perdido).
+    \item \textbf{Posición $N$ (Next):} Es cualquier estado desde el cual existe \textbf{al menos un movimiento} hacia una posición $P$. (El jugador actual se mueve a $P$ y le hereda la muerte al rival).
+    \item \textbf{Posición $P$ (Previous):} Es un estado desde el cual \textbf{todos los movimientos posibles} conducen obligatoriamente a posiciones $N$. (Hagas lo que hagas, dejas al rival en un estado ganador).
+\end{itemize}
+
+\subsection{El Teorema de Sprague-Grundy y la función \texttt{mex}}
+El teorema dicta que cualquier juego imparcial bajo juego normal es equivalente a una pila de Nim. El tamaño de dicha pila ficticia para un estado $G$ es su valor de Grundy, denotado como $g(G)$, y se calcula mediante la función del mínimo excluido (\texttt{mex}):
+$$g(G) = \text{mex}\big(\{ g(V) : G \to V \}\big)$$
+Donde $G \to V$ representa un movimiento válido desde el estado $G$ hacia el estado $V$. El \texttt{mex} de un conjunto de enteros no negativos es el entero no negativo más pequeño que \textbf{no} pertenece a dicho conjunto (ej. $\text{mex}(\{0, 1, 3\}) = 2$, $\text{mex}(\{1, 2\}) = 0$).
+
+\subsection{Implementación Eficiente de Grundy Values con DP}
+Para calcular los valores de Grundy en juegos abstractos (como juegos de sustracción de fichas o movimientos en grafos acíclicos dirigidos - DAGs), mapeamos los estados usando Programación Dinámica y calculamos el \texttt{mex} optimizado con vectores booleanos locales o conjuntos:
+
+\begin{lstlisting}[language=C++]
+// Calcula el Grundy Value para un conjunto de estados sucesores directos
+int getMex(const vector<int>& transitions) {
+    vector<bool> present(transitions.size() + 1, false);
+    for (int val : transitions) {
+        if (val < (int)present.size()) {
+            present[val] = true;
+        }
+    }
+    int mex = 0;
+    while (present[mex]) mex++;
+    return mex;
+}
+
+// Ejemplo de DP para un juego de sustraccion de fichas
+// Se pueden retirar {1, 3, 4} fichas por turno.
+int computeGrundy(int n) {
+    vector<int> memo(n + 1, 0);
+    vector<int> moves = {1, 3, 4}; // Movimientos permitidos
+    
+    for (int i = 1; i <= n; ++i) {
+        vector<int> next_states;
+        for (int m : moves) {
+            if (i - m >= 0) {
+                next_states.push_back(memo[i - m]);
+            }
+        }
+        memo[i] = getMex(next_states);
+    }
+    return memo[n];
+}
+\end{lstlisting}
+\textbf{Estrategia ICPC:} Si el valor devuelto por \texttt{computeGrundy(N)} es $0$, el estado actual es una $P$-position (pierdes). Si es $>0$, es una $N$-position (ganas). Si el juego consta de múltiples sub-juegos independientes concurrentes, la respuesta global es el XOR de los valores individuales de Grundy de cada sub-juego: $G_{total} = g(G_1) \oplus g(G_2) \oplus \dots \oplus g(G_k)$.
