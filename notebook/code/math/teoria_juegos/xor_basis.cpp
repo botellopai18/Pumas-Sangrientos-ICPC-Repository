@@ -58,19 +58,3 @@ struct XorBasis {
     }
 };
 
-int main() {
-    cin.tie(0)->sync_with_stdio(0);
-
-    XorBasis b;
-    vector<long long> arr = {12, 5, 2, 8, 14};
-
-    for (long long num : arr) {
-        b.insert(num);
-    }
-
-    cout << "Tamano de la base lineal: " << b.sz << "\n";
-    cout << "Maximo XOR posible de cualquier subconjunto: " << b.getMaxXor() << "\n";
-    cout << "¿Se puede formar el numero 7? " << (b.canForm(7) ? "SI" : "NO") << "\n";
-
-    return 0;
-}

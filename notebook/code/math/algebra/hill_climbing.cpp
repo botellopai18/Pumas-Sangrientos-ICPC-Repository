@@ -38,26 +38,3 @@ pair<double, P> hillClimb(P start, F f) {
     return cur;
 }
 
-int main() {
-    cin.tie(0)->sync_with_stdio(0);
-
-    // Queremos minimizar un paraboloide elíptico en 2D:
-    // f(x, y) = (x - 5.5)^2 + (y + 3.2)^2 + 10.0
-    // El mínimo global real está en: x = 5.5, y = -3.2 con un valor de 10.0
-    auto f = [](P p) {
-        double x = p[0], y = p[1];
-        return (x - 5.5) * (x - 5.5) + (y + 3.2) * (y + 3.2) + 10.0;
-    };
-
-    cout << "Ejecutando Hill Climbing desde el origen {0.0, 0.0}..." << "\n";
-    
-    // Le pasamos un punto inicial cualquiera, por ejemplo {0, 0}
-    auto [ans_val, ans_pos] = hillClimb({0.0, 0.0}, f);
-
-    cout << "--- Resultados Optimizados ---" << "\n";
-    cout << "Valor minimo encontrado: " << ans_val << " (Esperado: 10.0)" << "\n";
-    cout << "Coordenada X optima: " << ans_pos[0] << " (Esperado: 5.5)" << "\n";
-    cout << "Coordenada Y optima: " << ans_pos[1] << " (Esperado: -3.2)" << "\n";
-
-    return 0;
-}

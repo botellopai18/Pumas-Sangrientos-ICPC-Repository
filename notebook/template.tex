@@ -5,9 +5,9 @@
 \usepackage[spanish,es-tabla]{babel}
 \usepackage[T1]{fontenc}
 
-% Márgenes reducidos (Estilo ICPC)
+% Márgenes ultra reducidos optimizados (Estilo ICPC World Finals)
 \usepackage{geometry}
-\geometry{top=1.5cm, bottom=1.5cm, left=1cm, right=1cm, columnsep=0.75cm}
+\geometry{top=0.6cm, bottom=0.8cm, left=0.6cm, right=0.6cm, columnsep=0.5cm}
 
 % Paquetes matemáticos y de formato
 \usepackage{amsmath, amssymb}
@@ -19,7 +19,6 @@
 \usepackage{listings}
 
 % Configuración visual del código (C++ por defecto)
-% Configuración visual del código (C++ por defecto)
 \lstset{
     language=C++,
     basicstyle=\ttfamily\scriptsize,
@@ -29,7 +28,7 @@
     numbers=left,
     numberstyle=\tiny\color{gray},
     stepnumber=1,
-    numbersep=5pt,
+    numbersep=4pt,
     backgroundcolor=\color{white},
     showspaces=false,
     showstringspaces=false,
@@ -40,41 +39,41 @@
     breaklines=true,
     breakatwhitespace=false,
     escapeinside={\%*}{*)},
-    extendedchars=true, % Agregado para soportar caracteres extendidos
+    extendedchars=true,
+    inputencoding=utf8, % CRÍTICO: Vincula Listings con UTF-8 para evitar caídas
     literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
              {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
-             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1 % Mapeo de acentos y eñes
+             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1
+             {¿}{{\textquestiondown}}1 {¡}{{\textexclamdown}}1 % CRÍTICO: Soluciona el crash de XorBasis
 }
 
-% Configuración del encabezado
+% Configuración del encabezado compacto
 \pagestyle{fancy}
 \fancyhead[L]{\textbf{Pumas Sangrientos - ICPC Team Reference}}
 \fancyhead[R]{\thepage}
 \fancyfoot{}
 \renewcommand{\headrulewidth}{0.4pt}
 
-% Ajustes del índice para que sea compacto
+% Ajustes del índice para que sea ultra compacto y ahorre hojas
 \setlength{\cftbeforesecskip}{2pt}
 \renewcommand{\cftsecdotsep}{\cftdotsep}
 
 \begin{document}
 
 \begin{center}
-    \Huge \textbf{Pumas Sangrientos} \\
-    \Large \textbf{Team Reference Document}
+    \LARGE \textbf{Pumas Sangrientos} \\
+    \large \textbf{Team Reference Document}
 \end{center}
 
-% Índice generado automáticamente
+% Índice generado automáticamente de forma compacta
 \tableofcontents
-\vspace{0.5cm}
+\vspace{0.1cm}
 \hrule
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 % LLAMADA AL ARCHIVO EXTERNO MODULAR
 \input{setup_mac.tex}
-\input{game_teory.tex}
 
 % == GENERATOR_CONTENT ==
-
 
 \end{document}

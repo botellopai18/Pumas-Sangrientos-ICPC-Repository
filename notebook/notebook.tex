@@ -5,9 +5,9 @@
 \usepackage[spanish,es-tabla]{babel}
 \usepackage[T1]{fontenc}
 
-% Márgenes reducidos (Estilo ICPC)
+% Márgenes ultra reducidos optimizados (Estilo ICPC World Finals)
 \usepackage{geometry}
-\geometry{top=1.5cm, bottom=1.5cm, left=1cm, right=1cm, columnsep=0.75cm}
+\geometry{top=0.6cm, bottom=0.8cm, left=0.6cm, right=0.6cm, columnsep=0.5cm}
 
 % Paquetes matemáticos y de formato
 \usepackage{amsmath, amssymb}
@@ -19,7 +19,6 @@
 \usepackage{listings}
 
 % Configuración visual del código (C++ por defecto)
-% Configuración visual del código (C++ por defecto)
 \lstset{
     language=C++,
     basicstyle=\ttfamily\scriptsize,
@@ -29,7 +28,7 @@
     numbers=left,
     numberstyle=\tiny\color{gray},
     stepnumber=1,
-    numbersep=5pt,
+    numbersep=4pt,
     backgroundcolor=\color{white},
     showspaces=false,
     showstringspaces=false,
@@ -40,48 +39,49 @@
     breaklines=true,
     breakatwhitespace=false,
     escapeinside={\%*}{*)},
-    extendedchars=true, % Agregado para soportar caracteres extendidos
+    extendedchars=true,
+    inputencoding=utf8, % CRÍTICO: Vincula Listings con UTF-8 para evitar caídas
     literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
              {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
-             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1 % Mapeo de acentos y eñes
+             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1
+             {¿}{{\textquestiondown}}1 {¡}{{\textexclamdown}}1 % CRÍTICO: Soluciona el crash de XorBasis
 }
 
-% Configuración del encabezado
+% Configuración del encabezado compacto
 \pagestyle{fancy}
 \fancyhead[L]{\textbf{Pumas Sangrientos - ICPC Team Reference}}
 \fancyhead[R]{\thepage}
 \fancyfoot{}
 \renewcommand{\headrulewidth}{0.4pt}
 
-% Ajustes del índice para que sea compacto
+% Ajustes del índice para que sea ultra compacto y ahorre hojas
 \setlength{\cftbeforesecskip}{2pt}
 \renewcommand{\cftsecdotsep}{\cftdotsep}
 
 \begin{document}
 
 \begin{center}
-    \Huge \textbf{Pumas Sangrientos} \\
-    \Large \textbf{Team Reference Document}
+    \LARGE \textbf{Pumas Sangrientos} \\
+    \large \textbf{Team Reference Document}
 \end{center}
 
-% Índice generado automáticamente
+% Índice generado automáticamente de forma compacta
 \tableofcontents
-\vspace{0.5cm}
+\vspace{0.1cm}
 \hrule
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 % LLAMADA AL ARCHIVO EXTERNO MODULAR
 \input{setup_mac.tex}
-\input{game_teory.tex}
 
 \section{Basics}
 
 \subsection{Standard Competitive Programming Template}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Standard Competitive Programming Template\\
-Description: Plantilla base con optimización de I/O, macros comunes y typedefs esenciales para reducir tiempo de codificación.\\
-Author: Pumas Sangrientos\\
+\par\noindent Title: Standard Competitive Programming Template
+\par\noindent Description: Plantilla base con optimización de I/O, macros comunes y typedefs esenciales para reducir tiempo de codificación.
+\par\noindent Author: Pumas Sangrientos
 \end{flushleft}
 
 \begin{lstlisting}
@@ -129,10 +129,6 @@ int main() {
 }
 \end{lstlisting}
 
-\section{Data Structures}
-
-\section{Graphs}
-
 \section{Math}
 
 \subsection{Algebra}
@@ -140,16 +136,16 @@ int main() {
 \subsubsection{Hill Climbing Optimization 2D}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Hill Climbing Optimization 2D\\
-Author: KACTL / botellot / ICPC BRO\\
-Description: Heuristic search to minimize a 2D continuous function \$f(x, y)\$.\\
-It explores a 3x3 local grid around the current state with an exponentially decaying jump size.\\
-Complexity: O(\textbackslash\{\}log(\textbackslash\{\}text\{scale\}) \textbackslash\{\}cdot 100 \textbackslash\{\}cdot 9) \textbackslash\{\}approx O(1) with a small constant.\\
-Limitations:\\
-- Strictly requires the function to be unimodal (or locally well-behaved near `start`).\\
-- Can get trapped in local minima if the surface has multiple valleys.\\
-Usage:\\
-auto [val, pos] = hillClimb(\{0, 0\}, [](P p) \{ return p[0]*p[0] + p[1]*p[1]; \});\\
+\par\noindent Title: Hill Climbing Optimization 2D
+\par\noindent Author: KACTL / botellot / ICPC BRO
+\par\noindent Description: Heuristic search to minimize a 2D continuous function $f(x, y)$.
+\par\noindent It explores a 3x3 local grid around the current state with an exponentially decaying jump size.
+\par\noindent Complexity: O(\textsl\{\textbackslash\{\}\}log(\textsl\{\textbackslash\{\}\}text\{scale\}) \textsl\{\textbackslash\{\}\}cdot 100 \textsl\{\textbackslash\{\}\}cdot 9) \textsl\{\textbackslash\{\}\}approx O(1) with a small constant.
+\par\noindent Limitations:
+\par\noindent - Strictly requires the function to be unimodal (or locally well-behaved near `start`).
+\par\noindent - Can get trapped in local minima if the surface has multiple valleys.
+\par\noindent Usage:
+\par\noindent auto [val, pos] = hillClimb(\{0, 0\}, [](P p) \{ return p[0]*p[0] + p[1]*p[1]; \});
 \end{flushleft}
 
 \begin{lstlisting}
@@ -167,32 +163,22 @@ pair<double, P> hillClimb(P start, F f) {
     }
     return cur;
 }
-;
-    cout << "Ejecutando Hill Climbing desde el origen {0.0, 0.0}..." << "\n";
-    // Le pasamos un punto inicial cualquiera, por ejemplo {0, 0}
-    auto [ans_val, ans_pos] = hillClimb({0.0, 0.0}, f);
-    cout << "--- Resultados Optimizados ---" << "\n";
-    cout << "Valor minimo encontrado: " << ans_val << " (Esperado: 10.0)" << "\n";
-    cout << "Coordenada X optima: " << ans_pos[0] << " (Esperado: 5.5)" << "\n";
-    cout << "Coordenada Y optima: " << ans_pos[1] << " (Esperado: -3.2)" << "\n";
-    return 0;
-}
 \end{lstlisting}
 
 \subsubsection{Numerical Integration (Simpson's 1/3 Rule)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Numerical Integration (Simpson's 1/3 Rule)\\
-Author: KACTL / botellot / ICPC BRO\\
-Description: Approximates the definite integral \$\textbackslash\{\}int\_\{a\}\textasciicircum{}\{b\} f(x) dx\$ (area under the curve)\\
-using Simpson's 1/3 rule by fitting parabolas over \$2n\$ subintervals.\\
-Complexity: O(N) where N is the number of intervals.\\
-Limitations:\\
-- The function 'f' must be continuous and smooth within \$[a, b]\$.\\
-- If the function has sharp spikes, discontinuities, or vertical asymptotes,\\
-standard Simpson's rule will lose stability. In those cases, use Adaptive Integration instead.\\
-Usage:\\
-double area = quad(0, M\_PI, [](double x) \{ return sin(x); \}); // Returns 2.0\\
+\par\noindent Title: Numerical Integration (Simpson's 1/3 Rule)
+\par\noindent Author: KACTL / botellot / ICPC BRO
+\par\noindent Description: Approximates the definite integral $\int_{a}^{b} f(x) dx$ (area under the curve)
+\par\noindent using Simpson's 1/3 rule by fitting parabolas over $2n$ subintervals.
+\par\noindent Complexity: O(N) where N is the number of intervals.
+\par\noindent Limitations:
+\par\noindent - The function 'f' must be continuous and smooth within $[a, b]$.
+\par\noindent - If the function has sharp spikes, discontinuities, or vertical asymptotes,
+\par\noindent standard Simpson's rule will lose stability. In those cases, use Adaptive Integration instead.
+\par\noindent Usage:
+\par\noindent double area = quad(0, M\_PI, [](double x) \{ return sin(x); \}); // Returns 2.0
 \end{flushleft}
 
 \begin{lstlisting}
@@ -204,39 +190,27 @@ double quad(double a, double b, F f, const int n = 1000) { //
         v += f(a + i * h) * (i & 1 ? 4 : 2); //
     return v * h / 3; //
 }
-// --- CÓDIGO DE PRUEBA PARA TU TERMINAL EN MAC M2 ---
-;
-    cout << "--- Test 1: Funcion Polinomial ---" << "\n";
-    cout << "Area de 3x^2 de 0 a 2: " << quad(0, 2, f1) << " (Esperado: 8.0)" << "\n\n";
-    // Prueba 2: Una curva trigonometrica clasica
-    // Integral de f(x) = sin(x) desde x=0 hasta x=PI
-    // El area exacta bajo una montaña de seno es exactamente 2.0
-    auto f2 = [](double x) { return sin(x); };
-    cout << "--- Test 2: Funcion Trigonometrica ---" << "\n";
-    cout << "Area de sin(x) de 0 a PI: " << quad(0, M_PI, f2) << " (Esperado: 2.0)" << "\n";
-    return 0;
-}
 \end{lstlisting}
 
 \subsubsection{Polinomio}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Polinomio\\
-Author: KACTL / botellot / ICPC BRO\\
-Description: Structure to store and manipulate real-coefficient polynomials.\\
-Provides linear-time evaluation using Horner's Method, analytical differentiation,\\
-and in-place synthetic division (Ruffini's Rule) by a known root.\\
-Complexity:\\
-- Evaluation: O(N)\\
-- Differentiation: O(N)\\
-- Root Division: O(N)\\
-Limitations:\\
-- Uses `double`, so it is susceptible to floating-point precision loss and catastrophic cancellation in large degrees.\\
-- `divroot` assumes x0 is an exact or highly precise root; otherwise, numerical errors accumulate in the lower coefficients.\\
-Usage:\\
-Poly p\{\{2, -3, 1\}\}; // Represents x\textasciicircum{}2 - 3x + 2\\
-double val = p(2);  // Evaluates P(2) -\textgreater{} 0\\
-p.diff();           // P(x) becomes 2x - 3\\
+\par\noindent Title: Polinomio
+\par\noindent Author: KACTL / botellot / ICPC BRO
+\par\noindent Description: Structure to store and manipulate real-coefficient polynomials.
+\par\noindent Provides linear-time evaluation using Horner's Method, analytical differentiation,
+\par\noindent and in-place synthetic division (Ruffini's Rule) by a known root.
+\par\noindent Complexity:
+\par\noindent - Evaluation: O(N)
+\par\noindent - Differentiation: O(N)
+\par\noindent - Root Division: O(N)
+\par\noindent Limitations:
+\par\noindent - Uses `double`, so it is susceptible to floating-point precision loss and catastrophic cancellation in large degrees.
+\par\noindent - `divroot` assumes x0 is an exact or highly precise root; otherwise, numerical errors accumulate in the lower coefficients.
+\par\noindent Usage:
+\par\noindent Poly p\{\{2, -3, 1\}\}; // Represents x\textasciicircum{}2 - 3x + 2
+\par\noindent double val = p(2);  // Evaluates P(2) -\textgreater{} 0
+\par\noindent p.diff();           // P(x) becomes 2x - 3
 \end{flushleft}
 
 \begin{lstlisting}
@@ -283,9 +257,9 @@ struct Poly {
 \subsubsection{Binomial Coefficients Modulo Prime}
 \begin{flushleft}
 \footnotesize\ttfamily
-Description: Calcula coeficientes binomiales (nCr) usando factoriales precomputados e inversos modulares. Requiere que m sea primo.\\
-Author: botellot\\
-Title: Binomial Coefficients Modulo Prime\\
+\par\noindent Description: Calcula coeficientes binomiales (nCr) usando factoriales precomputados e inversos modulares. Requiere que m sea primo.
+\par\noindent Author: botellot
+\par\noindent Title: Binomial Coefficients Modulo Prime
 \end{flushleft}
 
 \begin{lstlisting}
@@ -330,7 +304,7 @@ ll nCr(int n, int k) {
 \subsubsection{Angle Radians}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Angle \textless{}-\textgreater{} radians\\
+\par\noindent Title: Angle \textless{}-\textgreater{} radians
 \end{flushleft}
 
 \begin{lstlisting}
@@ -348,11 +322,11 @@ double deg_to_rad(double deg) {
 \subsubsection{Angle Between Segments (Complex Coordinates)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Angle Between Segments (Complex Coordinates)\\
-Author: CP-Algorithms / ICPC BRO\\
-Description: Computes the directed angle from segment AB to segment CD.\\
-Returns the result in both radians and degrees.\\
-Complexity: O(1).\\
+\par\noindent Title: Angle Between Segments (Complex Coordinates)
+\par\noindent Author: CP-Algorithms / ICPC BRO
+\par\noindent Description: Computes the directed angle from segment AB to segment CD.
+\par\noindent Returns the result in both radians and degrees.
+\par\noindent Complexity: O(1).
 \end{flushleft}
 
 \begin{lstlisting}
@@ -387,12 +361,12 @@ void solve() {
 \subsubsection{Geometry Primitives (Complex Coordinates)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Geometry Primitives (Complex Coordinates)\\
-Author: CP-Algorithms / ICPC BRO\\
-Description: 2D Geometry primitives using std::complex.\\
-Maps (X, Y) to the complex number X + iY.\\
-Provides native vector operations, dot product, cross product, and rotations.\\
-Complexity: O(1) for all primitive operations.\\
+\par\noindent Title: Geometry Primitives (Complex Coordinates)
+\par\noindent Author: CP-Algorithms / ICPC BRO
+\par\noindent Description: 2D Geometry primitives using std::complex.
+\par\noindent Maps (X, Y) to the complex number X + iY.
+\par\noindent Provides native vector operations, dot product, cross product, and rotations.
+\par\noindent Complexity: O(1) for all primitive operations.
 \end{flushleft}
 
 \begin{lstlisting}
@@ -461,14 +435,14 @@ void solve() {
 \subsubsection{Convex Hull (Monotone Chain - Compact)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Convex Hull (Monotone Chain - Compact)\\
-Author: botellot / ICPC BRO\\
-Description: Computes the Convex Hull of a set of points using Andrew's Monotone Chain.\\
-Extremely compact version using a double-pass loop and coordinate reversing.\\
-Complexity: O(N log N) due to sorting.\\
-Usage:\\
-vector\textless{}P\textgreater{} pts = \{\{0,0\}, \{3,0\}, \{3,3\}, \{0,3\}, \{1,1\}\};\\
-vector\textless{}P\textgreater{} hull = get\_convex\_hull(pts);\\
+\par\noindent Title: Convex Hull (Monotone Chain - Compact)
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Computes the Convex Hull of a set of points using Andrew's Monotone Chain.
+\par\noindent Extremely compact version using a double-pass loop and coordinate reversing.
+\par\noindent Complexity: O(N log N) due to sorting.
+\par\noindent Usage:
+\par\noindent vector\textless{}P\textgreater{} pts = \{\{0,0\}, \{3,0\}, \{3,3\}, \{0,3\}, \{1,1\}\};
+\par\noindent vector\textless{}P\textgreater{} hull = get\_convex\_hull(pts);
 \end{flushleft}
 
 \begin{lstlisting}
@@ -515,14 +489,14 @@ vector<P> get_convex_hull(vector<P> points) {
 \subsubsection{Lattice Points (Pick's Theorem)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Lattice Points (Pick's Theorem)\\
-Author: botellot / ICPC BRO\\
-Description: Computes the number of interior (I) and boundary (B) lattice points\\
-of a simple polygon with integer coordinates using Pick's Theorem (A = I + B/2 - 1).\\
-Complexity: O(N log(max\_coord)) due to GCD for each edge.\\
-Usage:\\
-vector\textless{}P\textgreater{} poly = \{\{0,0\}, \{0,3\}, \{4,0\}\};\\
-auto [interior, boundary] = get\_lattice\_points(poly); // Returns \{0, 12\}\\
+\par\noindent Title: Lattice Points (Pick's Theorem)
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Computes the number of interior (I) and boundary (B) lattice points
+\par\noindent of a simple polygon with integer coordinates using Pick's Theorem (A = I + B/2 - 1).
+\par\noindent Complexity: O(N log(max\_coord)) due to GCD for each edge.
+\par\noindent Usage:
+\par\noindent vector\textless{}P\textgreater{} poly = \{\{0,0\}, \{0,3\}, \{4,0\}\};
+\par\noindent auto [interior, boundary] = get\_lattice\_points(poly); // Returns \{0, 12\}
 \end{flushleft}
 
 \begin{lstlisting}
@@ -580,13 +554,13 @@ void solve() {
 \subsubsection{Minimum Enclosing Circle (Welzl's Algorithm)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Minimum Enclosing Circle (Welzl's Algorithm)\\
-Author: CP-Algorithms / ICPC BRO\\
-Description: Computes the Minimum Enclosing Circle (MEC) in expected O(N) time.\\
-Uses std::variant and std::complex for zero-allocation performance and clean logic.\\
-Necesita c++17 para variant, visit y chrono\\
-Complexity: Expected O(N).\\
-Limitations: Coordinates must fit within int64\_t operations inside indicator().\\
+\par\noindent Title: Minimum Enclosing Circle (Welzl's Algorithm)
+\par\noindent Author: CP-Algorithms / ICPC BRO
+\par\noindent Description: Computes the Minimum Enclosing Circle (MEC) in expected O(N) time.
+\par\noindent Uses std::variant and std::complex for zero-allocation performance and clean logic.
+\par\noindent Necesita c++17 para variant, visit y chrono
+\par\noindent Complexity: Expected O(N).
+\par\noindent Limitations: Coordinates must fit within int64\_t operations inside indicator().
 \end{flushleft}
 
 \begin{lstlisting}
@@ -681,16 +655,16 @@ void solve() {
 \subsubsection{Integer Point}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Integer Point\\
-Author: botellot / ICPC BRO\\
-Description: Robust 2D Point/Vector structure using long long to avoid precision issues.\\
-Includes dot product, cross product, sorting comparators.\\
-Complexity: O(1) for all operations.\\
-Limitations:\\
-- Does not support non-integer operations (like division or precise rotation).\\
-- Watch out for overflow in cross/dot products if coordinates are \textgreater{} 10\textasciicircum{}9 (results fit in \_\_int128 if needed).\\
-Usage:\\
-P a\{1, 2\}, b\{3, 4\}, c\{5, 6\};\\
+\par\noindent Title: Integer Point
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Robust 2D Point/Vector structure using long long to avoid precision issues.
+\par\noindent Includes dot product, cross product, sorting comparators.
+\par\noindent Complexity: O(1) for all operations.
+\par\noindent Limitations:
+\par\noindent - Does not support non-integer operations (like division or precise rotation).
+\par\noindent - Watch out for overflow in cross/dot products if coordinates are \textgreater{} 10\textasciicircum{}9 (results fit in \_\_int128 if needed).
+\par\noindent Usage:
+\par\noindent P a\{1, 2\}, b\{3, 4\}, c\{5, 6\};
 \end{flushleft}
 
 \begin{lstlisting}
@@ -728,12 +702,12 @@ struct P {
 \subsubsection{Point in Polygon (Ray Casting)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Point in Polygon (Ray Casting)\\
-Author: botellot / ICPC BRO\\
-Description: Checks if a point P is INSIDE (1), OUTSIDE (0), or on the BOUNDARY (2) of a simple polygon.\\
-Uses a ray to infinity shifted by X+1 to completely avoid vertex-intersection edge cases.\\
-Needs vertices of polygon ordered clockwise or anticlockwise.\\
-Complexity: O(N) per query, where N is the number of polygon vertices.\\
+\par\noindent Title: Point in Polygon (Ray Casting)
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Checks if a point P is INSIDE (1), OUTSIDE (0), or on the BOUNDARY (2) of a simple polygon.
+\par\noindent Uses a ray to infinity shifted by X+1 to completely avoid vertex-intersection edge cases.
+\par\noindent Needs vertices of polygon ordered clockwise or anticlockwise.
+\par\noindent Complexity: O(N) per query, where N is the number of polygon vertices.
 \end{flushleft}
 
 \begin{lstlisting}
@@ -806,13 +780,13 @@ void solve() {
 \subsubsection{Point Location vs Line}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Point Location vs Line\\
-Author: botellot / ICPC BRO\\
-Description: Returns orientation of P3 relative to vector P1-\textgreater{}P2.\\
-- LEFT (1): Giro Antihorario (Counter-Clockwise). Producto cruz \textgreater{} 0.\\
-- RIGHT (-1): Giro Horario (Clockwise). Producto cruz \textless{} 0.\\
-- TOUCH (0): Colineales / Sobre la misma linea. Producto cruz = 0.\\
-Complexity: O(1).\\
+\par\noindent Title: Point Location vs Line
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Returns orientation of P3 relative to vector P1-\textgreater{}P2.
+\par\noindent - LEFT (1): Giro Antihorario (Counter-Clockwise). Producto cruz \textgreater{} 0.
+\par\noindent - RIGHT (-1): Giro Horario (Clockwise). Producto cruz \textless{} 0.
+\par\noindent - TOUCH (0): Colineales / Sobre la misma linea. Producto cruz = 0.
+\par\noindent Complexity: O(1).
 \end{flushleft}
 
 \begin{lstlisting}
@@ -832,16 +806,16 @@ int point_location(P p1, P p2, P p3) {
 \subsubsection{Polygon Area (Shoelace Formula)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Polygon Area (Shoelace Formula)\\
-Author: botellot / ICPC BRO\\
-Description: Computes twice the area of a simple polygon (convex or concave).\\
-Returns 2 * Area as long long to maintain absolute integer precision.\\
-Vertices must be given in clockwise or counter-clockwise order.\\
-Complexity: O(N) where N is the number of vertices.\\
-Usage:\\
-vector\textless{}P\textgreater{} poly = \{\{0,0\}, \{4,0\}, \{4,3\}\};\\
-ll double\_area = polygon\_double\_area(poly); // Returns 12\\
-double real\_area = double\_area / 2.0;       // 6.0\\
+\par\noindent Title: Polygon Area (Shoelace Formula)
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Computes twice the area of a simple polygon (convex or concave).
+\par\noindent Returns 2 * Area as long long to maintain absolute integer precision.
+\par\noindent Vertices must be given in clockwise or counter-clockwise order.
+\par\noindent Complexity: O(N) where N is the number of vertices.
+\par\noindent Usage:
+\par\noindent vector\textless{}P\textgreater{} poly = \{\{0,0\}, \{4,0\}, \{4,3\}\};
+\par\noindent ll double\_area = polygon\_double\_area(poly); // Returns 12
+\par\noindent double real\_area = double\_area / 2.0;       // 6.0
 \end{flushleft}
 
 \begin{lstlisting}
@@ -873,12 +847,12 @@ void solve() {
 \subsubsection{Segment Intersection (Anti-Overflow Version)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Segment Intersection (Anti-Overflow Version)\\
-Author: botellot / ICPC BRO\\
-Description: Robustly checks if line segments P1P2 and P3P4 intersect.\\
-Uses \_\_int128 in cross product to strictly avoid overflow with coordinates up to 10\textasciicircum{}9.\\
-Handles general intersections, T-junctions, and collinear/overlapping segments.\\
-Complexity: O(1).\\
+\par\noindent Title: Segment Intersection (Anti-Overflow Version)
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Description: Robustly checks if line segments P1P2 and P3P4 intersect.
+\par\noindent Uses \_\_int128 in cross product to strictly avoid overflow with coordinates up to 10\textasciicircum{}9.
+\par\noindent Handles general intersections, T-junctions, and collinear/overlapping segments.
+\par\noindent Complexity: O(1).
 \end{flushleft}
 
 \begin{lstlisting}
@@ -935,29 +909,84 @@ void solve() {
 
 \subsection{Teoria Juegos}
 
+\subsubsection{XOR Basis (Linear Basis)}
+\begin{flushleft}
+\footnotesize\ttfamily
+\par\noindent Title: XOR Basis (Linear Basis)
+\par\noindent Author: ICPC BRO / botellot
+\par\noindent Description: Maintains a set of linearly independent vectors under XOR.
+\par\noindent Useful for maximum/minimum XOR subset, counting distinct XOR sums, and membership queries.
+\par\noindent Complexity: O(log(MAX\_VAL)) per insertion. Max size is \textasciitilde{}60 for long long.
+\end{flushleft}
+
+\begin{lstlisting}
+struct XorBasis {
+    long long basis[62];
+    int sz = 0; // Guarda cuantos elementos reales tiene la base
+    XorBasis() {
+        for (int i = 0; i < 62; ++i) basis[i] = 0;
+    }
+    // Inserta un numero a la base. Retorna true si aporto informacion nueva.
+    bool insert(long long x) {
+        for (int i = 61; i >= 0; --i) {
+            if ((x >> i) & 1) { // Si el bit 'i' esta encendido
+                if (!basis[i]) { // Si la ranura esta vacia, lo insertamos
+                    basis[i] = x;
+                    sz++;
+                    return true;
+                }
+                x ^= basis[i]; // Si ya hay alguien, reducimos x y seguimos
+            }
+        }
+        return false; // x se volvio 0, no aporto nada nuevo
+    }
+    // Retorna el MAXIMO XOR posible que se puede formar con cualquier subconjunto
+    long long getMaxXor() {
+        long long res = 0;
+        for (int i = 61; i >= 0; --i) {
+            // Greedy: si prender el bit 'i' aumenta nuestro resultado, lo tomamos
+            if ((res ^ basis[i]) > res) {
+                res ^= basis[i];
+            }
+        }
+        return res;
+    }
+    // Verifica si un numero 'x' se puede formar con los elementos de la base
+    bool canForm(long long x) {
+        for (int i = 61; i >= 0; --i) {
+            if ((x >> i) & 1) {
+                if (!basis[i]) return false; // Falto un vector para apagar este bit
+                x ^= basis[i];
+            }
+        }
+        return x == 0;
+    }
+};
+\end{lstlisting}
+
 \subsection{Teoria Numeros}
 
 \subsubsection{BigInt Operations (Unsigned)}
 \begin{flushleft}
 \footnotesize\ttfamily
-Description: Basic BigInt structure for positive integers using base 10\textasciicircum{}9.\\
-* * Complexity:\\
-- Addition/Subtraction: O(N) where N is number of nodes (digits/9).\\
-- Multi-Int Multiply/Divide/Mod: O(N).\\
-- BigInt Multiply: O(N * M) quadratic. Fails if total digits \textgreater{} 10\textasciicircum{}5.\\
-- String Conversion: O(L) where L is string length.\\
-* Limitations:\\
-- Only supports non-negative integers.\\
-- less\_lnum assumes a \textgreater{}= b (no negative result support).\\
-- Division and Modulo are only by 'long long' scalars, not BigInt/BigInt.\\
-- Multiplication is not FFT-optimized.\\
-Provides fast I/O and linear operations for small/medium inputs.\\
-Author: botellot / ICPC BRO\\
-Title: BigInt Operations (Unsigned)\\
-* Usage:\\
-BigInt a("123456789123456789"), b(100);\\
-BigInt c = prod\_lnum\_int(a, 5);\\
-ll remainder = mod\_lnum\_int(a, 1e9+7);\\
+\par\noindent Description: Basic BigInt structure for positive integers using base 10\textasciicircum{}9.
+\par\noindent * * Complexity:
+\par\noindent - Addition/Subtraction: O(N) where N is number of nodes (digits/9).
+\par\noindent - Multi-Int Multiply/Divide/Mod: O(N).
+\par\noindent - BigInt Multiply: O(N * M) quadratic. Fails if total digits \textgreater{} 10\textasciicircum{}5.
+\par\noindent - String Conversion: O(L) where L is string length.
+\par\noindent * Limitations:
+\par\noindent - Only supports non-negative integers.
+\par\noindent - less\_lnum assumes a \textgreater{}= b (no negative result support).
+\par\noindent - Division and Modulo are only by 'long long' scalars, not BigInt/BigInt.
+\par\noindent - Multiplication is not FFT-optimized.
+\par\noindent Provides fast I/O and linear operations for small/medium inputs.
+\par\noindent Author: botellot / ICPC BRO
+\par\noindent Title: BigInt Operations (Unsigned)
+\par\noindent * Usage:
+\par\noindent BigInt a("123456789123456789"), b(100);
+\par\noindent BigInt c = prod\_lnum\_int(a, 5);
+\par\noindent ll remainder = mod\_lnum\_int(a, 1e9+7);
 \end{flushleft}
 
 \begin{lstlisting}
@@ -1075,9 +1104,9 @@ void print(const BigInt& a) {
 \subsubsection{Prime Sieve}
 \begin{flushleft}
 \footnotesize\ttfamily
-Title: Prime Sieve\\
-Description: Criba para encontrar primos menores a n y contar primos en segmento [L,R]\\
-Author: bot\\
+\par\noindent Title: Prime Sieve
+\par\noindent Description: Criba para encontrar primos menores a n y contar primos en segmento [L,R]
+\par\noindent Author: bot
 \end{flushleft}
 
 \begin{lstlisting}
@@ -1114,9 +1143,6 @@ vector<char> segmentedSieve(long long L, long long R) {
     return isPrime;
 }
 \end{lstlisting}
-
-\section{Strings}
-
 
 
 

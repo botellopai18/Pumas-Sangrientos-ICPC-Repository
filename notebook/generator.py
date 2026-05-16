@@ -58,12 +58,16 @@ def parse_metadata_and_comment(content):
     return title, full_comment
 
 def format_comment_to_latex(text):
-    """Escapa caracteres especiales de LaTeX y formatea los saltos de línea."""
+    """Detecta bloques matemáticos $...$ para mantenerlos intactos y escapa el texto normal ordenadamente."""
+    # Dividimos el texto usando el delimitador de matemáticas $
+    parts = text.split('$')
+    latex_parts = []
+    
+    # ¡CRÍTICO! El reemplazo de '\\' va al inicio para asegurar las barras originales
     replacements = [
-        ('\\', r'\textbackslash{}'),
+        ('\\', r'\textsl{\textbackslash{}}'), # Muestra la barra original de forma elegante
         ('&', r'\&'),
         ('%', r'\%'),
-        ('$', r'\$'),
         ('#', r'\#'),
         ('_', r'\_'),
         ('{', r'\{'),
@@ -74,21 +78,32 @@ def format_comment_to_latex(text):
         ('>', r'\textgreater{}')
     ]
     
-    lines = text.split('\n')
-    latex_lines = []
-    
-    for line in lines:
-        # Aplicar escapes de caracteres especiales
-        for key, val in replacements:
-            line = line.replace(key, val)
-        
-        # Si la línea está vacía, añadimos un espacio vertical para no romper LaTeX con dobles diagonales
-        if line.strip() == "":
-            latex_lines.append(r'\par\smallskip')
+    for idx, part in enumerate(parts):
+        if idx % 2 == 1:
+            # Índice impar significa que estaba CERRADO entre dos signos $
+            # Conservamos la fórmula matemática original intacta
+            latex_parts.append('$' + part + '$')
         else:
-            latex_lines.append(line + r'\\')
+            # Índice par es texto o comentarios normales, aplicamos la cascada ordenada
+            line = part
+            for key, val in replacements:
+                line = line.replace(key, val)
+            latex_parts.append(line)
             
-    return '\n'.join(latex_lines)
+    # Unimos las partes procesadas
+    full_text = "".join(latex_parts)
+    
+    # Formateamos los saltos de línea con párrafos estables sin usar dobles diagonales destructivas
+    lines = full_text.split('\n')
+    final_lines = []
+    for line in lines:
+        if line.strip() == "":
+            final_lines.append(r'\par\smallskip')
+        else:
+            final_lines.append(r'\par\noindent ' + line)
+            
+    return '\n'.join(final_lines)
+
 
 def process_file(file_path, file_name, level):
     """Genera el bloque LaTeX para un archivo individual con su documentación."""
@@ -151,14 +166,23 @@ def generate_notebook():
     compile_and_clean()
 
 def compile_and_clean():
-    print("Compilando PDF...")
+    print("Compilando PDF (Paso 1/3)...")
+    # Quitamos el DEVNULL temporalmente para que si truena, veas el error real en la terminal
+    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE])
+    
+    print("Compilando PDF (Paso 2/3)...")
     subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
+    
+    print("Compilando PDF (Paso 3/3 - Estabilizando Indice)...")
     subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
     
     base = os.path.splitext(OUTPUT_FILE)[0]
-    for ext in ['.aux', '.log', '.toc', '.out']:
-        if os.path.exists(base + ext): os.remove(base + ext)
-    print("¡Proceso completado! Archivo: notebook.pdf")
+    # CONSEJO DE ICPC: No borres el .toc inmediatamente si vas a estar editando seguido, 
+    # pero si lo dejas, al menos ya se habrá renderizado en el tercer paso.
+    for ext in ['.aux', '.log', '.out']:
+        if os.path.exists(base + ext): 
+            os.remove(base + ext)
+    print("¡Proceso completado exitosamente! Archivo: notebook.pdf")
 
 if __name__ == '__main__':
     generate_notebook()
