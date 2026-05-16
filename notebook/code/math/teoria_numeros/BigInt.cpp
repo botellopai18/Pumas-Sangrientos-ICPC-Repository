@@ -1,4 +1,4 @@
-/**
+/*
  * Description: Basic BigInt structure for positive integers using base 10^9.
  *  * * Complexity:
  * - Addition/Subtraction: O(N) where N is number of nodes (digits/9).
@@ -18,7 +18,6 @@
  * BigInt c = prod_lnum_int(a, 5);
  * ll remainder = mod_lnum_int(a, 1e9+7);
  */
-
 #include <iostream>
 #include <vector>
 #include <string>

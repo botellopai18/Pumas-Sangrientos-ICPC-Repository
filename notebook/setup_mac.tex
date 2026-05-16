@@ -1,0 +1,57 @@
+\section{Entorno y Configuración (macOS / Linux)}
+
+\subsection{Instalación de Utilidades GNU en Mac}
+Para utilizar la suite completa de GNU (como la cabecera universal \texttt{<bits/stdc++.h>}) e igualar con precisión el entorno de evaluación del concurso, instala la última versión de GCC y las utilidades de núcleo de GNU mediante Homebrew:
+\begin{lstlisting}[language=bash]
+brew install gcc coreutils
+\end{lstlisting}
+
+\subsection{Alias de Compilación (\texttt{\textasciitilde/.zshrc})}
+Agrega este alias al final de tu archivo de configuración de la terminal para compilar localmente de forma rápida. 
+
+\textbf{Nota Crítica de Arquitectura (Apple Silicon):} En procesadores M1/M2/M3 bajo macOS, la suite \texttt{libsanitizer} dentro de GCC para ARM64 no cuenta con soporte nativo completo en Homebrew, lo que arroja el error \texttt{ld: library 'asan' not found}. Se han removido las banderas \texttt{-fsanitize=address,undefined}, pero se conservan los diagnósticos estrictos de tipos, desbordamientos lógicos y conversiones implícitas peligrosas:
+
+\begin{lstlisting}[language=bash]
+# Ajustar g++-15 a la version exacta instalada en tu equipo (ej. g++-14, g++-15)
+alias c='g++-15 -Wall -Wconversion -Wfatal-errors -g -std=c++17'
+\end{lstlisting}
+Actualiza tu sesión corriendo en la terminal: \texttt{source \textasciitilde/.zshrc}.
+
+También puedes simplemente agregarlo al final como: \texttt{echo "alias c='g++-15 -Wall -Wconversion -Wfatal-errors -g -std=c++17'" >> ~/.zshrc}
+
+\subsection{Script de Verificación de Tipografía (\texttt{hash.sh})}
+Crea el archivo \texttt{hash.sh} para validar la correcta transcripción de tus plantillas de código desde el cuaderno impreso. Este script compara el hash de 6 caracteres del código limpio con el hexadecimal de KACTL. 
+
+\textbf{Nota sobre Portabilidad de Hashes:} Es indispensable incluir la bandera \texttt{-fpreprocessed} para evitar que el compilador inyecte macros internos específicos del procesador M2 o del sistema operativo macOS, lo cual corrompería el hash portable de KACTL:
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+g++-15 -E -dD -P -fpreprocessed - | tr -d '[:space:]' | gmd5sum | cut -c-6
+\end{lstlisting}
+Otorga los permisos de ejecución necesarios en tu terminal:
+\begin{lstlisting}[language=bash]
+chmod +x hash.sh
+\end{lstlisting}
+Úsalo de la siguiente forma para verificar fallos tipográficos: ./hash.sh < codigo.cpp
+
+\subsection{Configuración Básica de Editor (\texttt{\textasciitilde/.vimrc})}
+Habilita el auto-indentado limpio para código de C++ y el mapeo de escape veloz presionando las teclas \texttt{jk} o \texttt{kj} de forma sucesiva en modo inserción:
+\begin{lstlisting}[language=bash]
+set cin aw ai is ts=4 sw=4 tm=50 nu noeb bg=dark ru cul sy on
+im jk <esc>
+im kj <esc>
+\end{lstlisting}
+
+\subsection{Remapear Caps Lock de Forma Nativa en macOS}
+Para evitar comandos de Linux incompatibles en macOS (como \texttt{xmodmap}), puedes cambiar el mapeo directamente desde la interfaz del sistema operativo:
+\begin{enumerate}
+    \item Ve a \textbf{Ajustes del Sistema} $\rightarrow$ \textbf{Teclado}.
+    \item Haz clic en \textbf{Atajos de teclado...} y luego selecciona \textbf{Teclas de modificación}.
+    \item Cambia la acción de la tecla \textbf{Bloqueo de mayúsculas} (\textit{Caps Lock}) a \textbf{Control} o \textbf{Escape} para una navegación ultra veloz en Vim.
+\end{enumerate}
+
+\subsection{Validar Binario Activo}
+Si Homebrew actualiza o instala una versión superior de GCC, identifica con exactitud el sufijo del comando y las rutas ejecutando:
+\begin{lstlisting}[language=bash]
+brew info gcc
+ls /opt/homebrew/bin/g++-*
+\end{lstlisting}

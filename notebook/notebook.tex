@@ -1,0 +1,1040 @@
+\documentclass[10pt,landscape,twocolumn]{article}
+
+% Codificación y lenguaje
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[T1]{fontenc}
+
+% Márgenes reducidos (Estilo ICPC)
+\usepackage{geometry}
+\geometry{top=1.5cm, bottom=1.5cm, left=1cm, right=1cm, columnsep=0.75cm}
+
+% Paquetes matemáticos y de formato
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+
+% Paquete para el código
+\usepackage{listings}
+
+% Configuración visual del código (C++ por defecto)
+% Configuración visual del código (C++ por defecto)
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\scriptsize,
+    keywordstyle=\color{blue!70!black}\bfseries,
+    stringstyle=\color{red!70!black},
+    commentstyle=\color{green!50!black}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{white},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=L, % Línea a la izquierda
+    tabsize=4,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=false,
+    escapeinside={\%*}{*)},
+    extendedchars=true, % Agregado para soportar caracteres extendidos
+    literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+             {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+             {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {ü}{{\"u}}1 {Ü}{{\"U}}1 % Mapeo de acentos y eñes
+}
+
+% Configuración del encabezado
+\pagestyle{fancy}
+\fancyhead[L]{\textbf{Pumas Sangrientos - ICPC Team Reference}}
+\fancyhead[R]{\thepage}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Ajustes del índice para que sea compacto
+\setlength{\cftbeforesecskip}{2pt}
+\renewcommand{\cftsecdotsep}{\cftdotsep}
+
+\begin{document}
+
+\begin{center}
+    \Huge \textbf{Pumas Sangrientos} \\
+    \Large \textbf{Team Reference Document}
+\end{center}
+
+% Índice generado automáticamente
+\tableofcontents
+\vspace{0.5cm}
+\hrule
+\vspace{0.5cm}
+
+% LLAMADA AL ARCHIVO EXTERNO MODULAR
+\input{setup_mac.tex}
+
+\section{Basics}
+
+\subsection{Standard Competitive Programming Template}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Standard Competitive Programming Template\\
+Description: Plantilla base con optimización de I/O, macros comunes y typedefs esenciales para reducir tiempo de codificación.\\
+Author: Pumas Sangrientos\\
+\end{flushleft}
+
+\begin{lstlisting}
+#include <bits/stdc++.h>
+
+using namespace std;
+
+// === Typedefs ===
+typedef long long ll;
+typedef long double ld;
+typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
+typedef vector<int> vi;
+typedef vector<ll> vll;
+
+// === Macros ===
+#define endl '\n'
+#define pb push_back
+#define all(x) (x).begin(), (x).end()
+#define sz(x) (int)(x).size()
+#define FOR(i, a, b) for(int i = (a); i < (b); ++i)
+#define ROF(i, a, b) for(int i = (a); i >= (b); --i)
+
+
+void fast_io() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+}
+
+void solve() {
+    // Escribe tu lógica aquí
+}
+
+int main() {
+    fast_io();
+
+    int t = 1;
+    // cin >> t; // Descomentar si el problema tiene múltiples casos de prueba
+    while(t--) {
+        solve();
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\section{Data Structures}
+
+\section{Graphs}
+
+\section{Math}
+
+\subsection{Algebra}
+
+\subsubsection{Polinomio}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Polinomio\\
+Author: KACTL / botellot / ICPC BRO\\
+Description: Structure to store and manipulate real-coefficient polynomials.\\
+Provides linear-time evaluation using Horner's Method, analytical differentiation,\\
+and in-place synthetic division (Ruffini's Rule) by a known root.\\
+Complexity:\\
+- Evaluation: O(N)\\
+- Differentiation: O(N)\\
+- Root Division: O(N)\\
+Limitations:\\
+- Uses `double`, so it is susceptible to floating-point precision loss and catastrophic cancellation in large degrees.\\
+- `divroot` assumes x0 is an exact or highly precise root; otherwise, numerical errors accumulate in the lower coefficients.\\
+Usage:\\
+Poly p\{\{2, -3, 1\}\}; // Represents x\textasciicircum{}2 - 3x + 2\\
+double val = p(2);  // Evaluates P(2) -\textgreater{} 0\\
+p.diff();           // P(x) becomes 2x - 3\\
+\end{flushleft}
+
+\begin{lstlisting}
+// Macro utilitaria para emular el estilo scannable de KACTL
+struct Poly {
+    vector<double> a;
+    // Evalúa el polinomio en el punto x usando el Método de Horner 
+    // Evita calcular potencias explícitas x^n, reduciendo el error numérico.
+    double operator() (double x) const {
+        double val = 0; 
+        for (int i = sz(a); i--;) {
+            val = val * x + a[i]; 
+        }
+        return val; 
+    }
+    // Calcula la derivada analítica del polinomio in-place
+    // Regla de la potencia: d/dx(c * x^i) = i * c * x^(i-1)
+    void diff() {
+        for (int i = 1; i < sz(a); ++i) {
+            a[i - 1] = i * a[i];
+        }
+        if (!a.empty()) {
+            a.pop_back(); // El grado máximo disminuye en 1 
+        }
+    }
+    // Divide el polinomio entre (x - x0) in-place usando la Regla de Ruffini 
+    // Útil para "eliminar" una raíz ya encontrada y buscar las demás en un grado menor.
+    void divroot(double x0) {
+        double b = 0;
+        for (int i = sz(a); i--;) { 
+            double c = a[i]; 
+            a[i] = b;       // Guarda el coeficiente del nuevo cociente
+            b = c + b * x0; // Calcula el residuo acumulado
+        }
+        if (!a.empty()) {
+            a.pop_back(); // Elimina el último elemento sobrante (grado se reduce en 1)
+        }
+    }
+};
+\end{lstlisting}
+
+\subsection{Combinatoria}
+
+\subsubsection{Binomial Coefficients Modulo Prime}
+\begin{flushleft}
+\footnotesize\ttfamily
+Description: Calcula coeficientes binomiales (nCr) usando factoriales precomputados e inversos modulares. Requiere que m sea primo.\\
+Author: botellot\\
+Title: Binomial Coefficients Modulo Prime\\
+\end{flushleft}
+
+\begin{lstlisting}
+const int MAXN = 1000005; // Ajustar según el problema
+    // O 998244353
+ll factorial[MAXN];
+ll inv_factorial[MAXN];
+// Exponenciación binaria para el inverso modular O(log m)
+ll power(ll base, ll exp) {
+    ll res = 1;
+    base %= m;
+    while (exp > 0) {
+        if (exp % 2 == 1) res = (res * base) % m;
+        base = (base * base) % m;
+        exp /= 2;
+    }
+    return res;
+}
+ll modInverse(ll n) {
+    return power(n, m - 2);
+}
+// Precomputo en O(MAXN)
+void precompute() {
+    factorial[0] = 1;
+    for (int i = 1; i < MAXN; i++)
+        factorial[i] = (factorial[i - 1] * i) % m;
+    // Inverso del factorial final usando Fermat
+    inv_factorial[MAXN - 1] = modInverse(factorial[MAXN - 1]);
+    // Inversos de los demás factoriales en O(MAXN)
+    for (int i = MAXN - 2; i >= 0; i--)
+        inv_factorial[i] = (inv_factorial[i + 1] * (i + 1)) % m;
+}
+// Cálculo en O(1)
+ll nCr(int n, int k) {
+    if (k < 0 || k > n) return 0;
+    return factorial[n] * inv_factorial[k] % m * inv_factorial[n - k] % m;
+}
+\end{lstlisting}
+
+\subsection{Geometry}
+
+\subsubsection{Angle Radians}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Angle \textless{}-\textgreater{} radians\\
+\end{flushleft}
+
+\begin{lstlisting}
+const double PI = acos(-1.0);
+// Convierte radianes a grados
+double rad_to_deg(double rad) {
+    return rad * 180.0 / PI;
+}
+// Convierte grados a radianes (por si la necesitas al revés)
+double deg_to_rad(double deg) {
+    return deg * PI / 180.0;
+}
+\end{lstlisting}
+
+\subsubsection{Angle Between Segments (Complex Coordinates)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Angle Between Segments (Complex Coordinates)\\
+Author: CP-Algorithms / ICPC BRO\\
+Description: Computes the directed angle from segment AB to segment CD.\\
+Returns the result in both radians and degrees.\\
+Complexity: O(1).\\
+\end{flushleft}
+
+\begin{lstlisting}
+using ftype = double; 
+using point = complex<ftype>;
+const double PI = acos(-1.0);
+// Retorna el ángulo dirigido desde v1 hacia v2 en radianes (rango de -PI a PI)
+// Un valor positivo significa giro antihorario, negativo significa giro horario
+double angle_between_vectors(point v1, point v2) {
+    // La magia de los complejos: arg(conj(v1) * v2) 
+    // es equivalente a hacer atan2(cross(v1,v2), dot(v1,v2))
+    return arg(conj(v1) * v2);
+}
+// Retorna el ángulo dirigido del segmento AB al segmento CD
+double angle_between_segments(point a, point b, point c, point d) {
+    point v1 = b - a; // Vector del primer segmento
+    point v2 = d - c; // Vector del segundo segmento
+    return angle_between_vectors(v1, v2);
+}
+void solve() {
+    // Segmento 1: De (0,0) a (2,0) -> Vector horizontal a la derecha (0 grados)
+    point a = {0.0, 0.0}, b = {2.0, 0.0};
+    // Segmento 2: De (0,0) a (0,2) -> Vector vertical hacia arriba (90 grados)
+    point c = {0.0, 0.0}, d = {0.0, 2.0};
+    double rad = angle_between_segments(a, b, c, d);
+    double deg = rad * 180.0 / PI;
+    cout << "Angulo en Radianes: " << rad << "\n"; // Debería dar PI / 2 (~1.5708)
+    cout << "Angulo en Grados: " << deg << "\n";   // Debería dar 90.0
+}
+\end{lstlisting}
+
+\subsubsection{Geometry Primitives (Complex Coordinates)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Geometry Primitives (Complex Coordinates)\\
+Author: CP-Algorithms / ICPC BRO\\
+Description: 2D Geometry primitives using std::complex.\\
+Maps (X, Y) to the complex number X + iY.\\
+Provides native vector operations, dot product, cross product, and rotations.\\
+Complexity: O(1) for all primitive operations.\\
+\end{flushleft}
+
+\begin{lstlisting}
+// Podemos usar double o int64_t dependiendo de si el problema requiere precision exacta
+using ftype = double; 
+using point = complex<ftype>;
+// --- OPERACIONES BASICAS NATIVAS ---
+// punto p = {x, y};
+// p.real() -> Accede a la coordenada X
+// p.imag() -> Accede a la coordenada Y
+// p1 + p2  -> Suma de vectores (Traslacion)
+// p1 - p2  -> Resta de vectores (Vector de p2 apuntando a p1)
+// p * k    -> Multiplicacion por un escalar k (Escalamiento)
+// Producto Punto (Dot Product): a . b = |a||b|cos(theta)
+// Utilidad: Proyecciones, detectar angulos agudos/rectos/obtusos
+ftype dot(point a, point b) {
+    return (conj(a) * b).real();
+}
+// Producto Cruz (Cross Product): a x b = |a||b|sin(theta)
+// Utilidad: Areas, orientacion (CCW), giros izquierda/derecha
+ftype cross(point a, point b) {
+    return (conj(a) * b).imag();
+}
+// Magnitud al cuadrado (Squared Magnitude)
+// Si ftype es entero, esto se mantiene 100% exacto sin floats
+ftype norm_sq(point a) {
+    return norm(a); // std::norm regresa x^2 + y^2
+}
+// Magnitud real (Distancia al origen)
+double magnitude(point a) {
+    return abs(a); // std::abs regresa sqrt(x^2 + y^2)
+}
+// Distancia entre dos puntos
+double dist(point a, point b) {
+    return abs(a - b);
+}
+// --- ORIENTACION Y GIROS ---
+// Orientacion de 3 puntos (CCW)
+// Retorna: > 0 si c gira a la izquierda de ab, < 0 a la derecha, 0 si son colineales
+ftype ccw(point a, point b, point c) {
+    return cross(b - a, c - a);
+}
+// --- ROTACIONES (Solo si ftype es punto flotante) ---
+// Angulo polar del vector en radianes (rango de -pi a pi)
+double angle(point a) {
+    return arg(a);
+}
+// Rotar un punto 'a' un angulo 'theta' (en radianes) respecto al origen
+point rotate_origin(point a, double theta) {
+    return a * polar(1.0, theta);
+}
+// Rotar un punto 'p' respecto a un centro 'pivot' un angulo 'theta'
+point rotate_pivot(point p, point pivot, double theta) {
+    return pivot + (p - pivot) * polar(1.0, theta);
+}
+void solve() {
+    point a = {3.0, 4.0};
+    point b = {1.0, 2.0};
+    cout << "X: " << a.real() << ", Y: " << a.imag() << "\n";
+    cout << "Suma: " << (a + b).real() << " " << (a + b).imag() << "\n";
+    cout << "Producto Punto: " << dot(a, b) << "\n";
+    cout << "Producto Cruz: " << cross(a, b) << "\n";
+}
+\end{lstlisting}
+
+\subsubsection{Convex Hull (Monotone Chain - Compact)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Convex Hull (Monotone Chain - Compact)\\
+Author: botellot / ICPC BRO\\
+Description: Computes the Convex Hull of a set of points using Andrew's Monotone Chain.\\
+Extremely compact version using a double-pass loop and coordinate reversing.\\
+Complexity: O(N log N) due to sorting.\\
+Usage:\\
+vector\textless{}P\textgreater{} pts = \{\{0,0\}, \{3,0\}, \{3,3\}, \{0,3\}, \{1,1\}\};\\
+vector\textless{}P\textgreater{} hull = get\_convex\_hull(pts);\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct P {
+    ll x, y;
+    void read() { 
+    cin >> x >> y; }
+    P operator - (const P& b) const { return {x - b.x, y - b.y}; }
+    ll operator * (const P& b) const { return x * b.y - y * b.x; }
+    __int128 triangle(const P& b, const P& c) const {return (__int128)((b - *this) * (c - *this));}
+    bool operator < (const P& b) const {return make_pair(x,y) < make_pair(b.x, b.y);}
+};
+// Funcion que recibe el set de puntos y retorna las esquinas del Convex Hull
+vector<P> get_convex_hull(vector<P> points) {
+    int n = points.size();
+    if (n <= 1) return points;
+    // 1. Ordenar de izquierda a derecha
+    sort(points.begin(), points.end()); 
+    vector<P> hull;
+    // 2. Doble pasada (rep=0 para el cascaron superior, rep=1 para el inferior)
+    for (int rep = 0; rep < 2; ++rep) {
+        const int S = hull.size(); // S guarda el tamaño inicial de esta pasada
+        for (P C : points) {
+            // hull.size() - S >= 2 asegura no borrar puntos de la pasada anterior
+            while ((int)hull.size() - S >= 2) {
+                P A = hull[hull.size() - 2]; // Equivalente a hull.end()[-2]
+                P B = hull[hull.size() - 1]; // Equivalente a hull.end()[-1]
+                // Si el giro es a la derecha (o colineal), el punto B es valido
+                if (A.triangle(B, C) <= 0) { 
+                    break;
+                }
+                // Si el giro es a la izquierda, B hace una "panza" invalida y se elimina
+                hull.pop_back(); 
+            }
+            hull.push_back(C);
+        }
+        hull.pop_back(); // Elimina el punto extremo duplicado antes de dar la vuelta
+        reverse(points.begin(), points.end()); // Voltear los puntos para el viaje de regreso
+    }
+    return hull;
+}
+\end{lstlisting}
+
+\subsubsection{Lattice Points (Pick's Theorem)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Lattice Points (Pick's Theorem)\\
+Author: botellot / ICPC BRO\\
+Description: Computes the number of interior (I) and boundary (B) lattice points\\
+of a simple polygon with integer coordinates using Pick's Theorem (A = I + B/2 - 1).\\
+Complexity: O(N log(max\_coord)) due to GCD for each edge.\\
+Usage:\\
+vector\textless{}P\textgreater{} poly = \{\{0,0\}, \{0,3\}, \{4,0\}\};\\
+auto [interior, boundary] = get\_lattice\_points(poly); // Returns \{0, 12\}\\
+\end{flushleft}
+
+\begin{lstlisting}
+// Contiene std::gcd para C++17
+struct P {
+    ll x, y;
+    void read() { cin >> x >> y; }
+    P operator - (const P& b) const { return {x - b.x, y - b.y}; }
+    // __int128 para evitar overflow en coordenadas grandes durante el producto cruz
+    __int128 operator * (const P& b) const { return (__int128)x * b.y - (__int128)y * b.x; }
+};
+// Funcion iterativa de GCD para asegurar compatibilidad absoluta y velocidad
+ll safe_gcd(ll a, ll b) {
+    a = abs(a); b = abs(b);
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+// Retorna un pair: {puntos_interiores, puntos_en_el_borde}
+pair<ll, ll> get_lattice_points(const vector<P>& poly) {
+    int n = poly.size();
+    __int128 double_area = 0;
+    ll boundary = 0;
+    for (int i = 0; i < n; i++) {
+        int j = (i + 1 == n) ? 0 : i + 1;
+        // 1. Acumular el doble del area (Shoelace)
+        double_area += poly[i] * poly[j];
+        // 2. Contar puntos enteros en el segmento actual usando GCD
+        P diff = poly[j] - poly[i];
+        boundary += safe_gcd(diff.x, diff.y);
+    }
+    // Asegurar que el area sea positiva
+    if (double_area < 0) double_area = -double_area;
+    // 3. Aplicar Teorema de Pick despejando los puntos interiores (I)
+    // Formula original: A = I + B/2 - 1  ==>  2A = 2I + B - 2  ==>  2I = 2A - B + 2
+    ll interior = (ll)(double_area - boundary + 2) / 2;
+    return {interior, boundary};
+}
+void solve() {
+    int n; 
+    if (!(cin >> n)) return;
+    vector<P> polygon(n);
+    for (int i = 0; i < n; i++) {
+        polygon[i].read();
+    }
+    pair<ll, ll> ans = get_lattice_points(polygon);
+    cout << ans.first << " " << ans.second << "\n";
+}
+    return 0;
+}
+\end{lstlisting}
+
+\subsubsection{Minimum Enclosing Circle (Welzl's Algorithm)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Minimum Enclosing Circle (Welzl's Algorithm)\\
+Author: CP-Algorithms / ICPC BRO\\
+Description: Computes the Minimum Enclosing Circle (MEC) in expected O(N) time.\\
+Uses std::variant and std::complex for zero-allocation performance and clean logic.\\
+Necesita c++17 para variant, visit y chrono\\
+Complexity: Expected O(N).\\
+Limitations: Coordinates must fit within int64\_t operations inside indicator().\\
+\end{flushleft}
+
+\begin{lstlisting}
+using ftype = int64_t;
+using point = complex<ftype>;
+// El circulo minimo siempre esta representado por 2 o 3 puntos en su circunferencia
+using mec = variant<
+    array<point, 2>,
+    array<point, 3>
+>;
+ftype indicator(mec const& C, point z) {
+    return visit([&](auto &&C) {
+        point a = C[0], b = C[1];
+        // La parte real de Multiplicar un numero complejo por el conjugado de otro (conj) 
+        // es exactamente igual al producto punto de ambos vectores.
+        point I0 = (b - z) * conj(a - z);
+        if constexpr (C.size() == 2) {
+            return real(I0);
+        } else {
+            point c = C[2];
+            point I2 = (a - c) * conj(b - c);
+            point I1 = I0 * I2;
+            return imag(I2) < 0 ? -imag(I1) : imag(I1);
+        }
+    }, C);
+}
+bool inside(mec const& C, point p) {
+    return indicator(C, p) <= 0;
+}
+// Inicializacion del generador con un seed basado en tiempo real para evitar hacks
+mt19937_64 gen(chrono::steady_clock::now().time_since_epoch().count());
+mec enclosing_circle(vector<point> &p) {
+    int n = p.size();
+    if (n == 0) return array<point, 2>{point{0, 0}, point{0, 0}};
+    // El shuffle aleatorio es lo que garantiza el tiempo esperado O(N)
+    shuffle(p.begin(), p.end(), gen);
+    // Inicializar de forma segura con el primer punto duplicado (Soporta N=1 perfectamente)
+    mec C = array<point, 2>{p[0], p[0]};
+    for (int i = 0; i < n; i++) {
+        if (!inside(C, p[i])) {
+            C = array<point, 2>{p[i], p[0]};
+            for (int j = 0; j < i; j++) {
+                if (!inside(C, p[j])) {
+                    C = array<point, 2>{p[i], p[j]};
+                    for (int k = 0; k < j; k++) {
+                        if (!inside(C, p[k])) {
+                            C = array<point, 3>{p[i], p[j], p[k]};
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return C;
+}
+// --- BONUS: Como recuperar el centro y el radio en punto flotante si el problema lo pide ---
+pair<complex<double>, double> get_circle_geometry(mec const& C) {
+    return visit([&](auto &&C) -> pair<complex<double>, double> {
+        if constexpr (C.size() == 2) {
+            complex<double> a(real(C[0]), imag(C[0]));
+            complex<double> b(real(C[1]), imag(C[1]));
+            complex<double> center = (a + b) / 2.0;
+            double radius = abs(a - b) / 2.0;
+            return {center, radius};
+        } else {
+            complex<double> a(real(C[0]), imag(C[0]));
+            complex<double> b(real(C[1]), imag(C[1]));
+            complex<double> c(real(C[2]), imag(C[2]));
+            // Formula del circuncentro usando numeros complejos
+            complex<double> d = (a - b) * conj(c - b);
+            complex<double> center = b + (a - b) * complex<double>(0, 1) * (c - b) * conj(c - a) / (2.0 * d.imag());
+            double radius = abs(a - center);
+            return {center, radius};
+        }
+    }, C);
+}
+void solve() {
+    int n;
+    if (!(cin >> n)) return;
+    vector<point> orig_points(n);
+    for (int i = 0; i < n; i++) {
+        ftype x, y;
+        cin >> x >> y;
+        orig_points[i] = point{x, y};
+    }
+    // Sacamos una copia para que Welzl la barajee sin perder el orden original
+    vector<point> working_points = orig_points;
+    mec C = enclosing_circle(working_points);
+}
+\end{lstlisting}
+
+\subsubsection{Integer Point}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Integer Point\\
+Author: botellot / ICPC BRO\\
+Description: Robust 2D Point/Vector structure using long long to avoid precision issues.\\
+Includes dot product, cross product, sorting comparators.\\
+Complexity: O(1) for all operations.\\
+Limitations:\\
+- Does not support non-integer operations (like division or precise rotation).\\
+- Watch out for overflow in cross/dot products if coordinates are \textgreater{} 10\textasciicircum{}9 (results fit in \_\_int128 if needed).\\
+Usage:\\
+P a\{1, 2\}, b\{3, 4\}, c\{5, 6\};\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct P {
+    ll x, y;
+    void read() {
+        cin >> x >> y;
+    }
+    // Operaciones básicas de vectores
+    P operator + (const P& b) const { return P{x + b.x, y + b.y}; }
+    P operator - (const P& b) const { return P{x - b.x, y - b.y}; }
+    void operator += (const P& b) { x += b.x; y += b.y; }
+    void operator -= (const P& b) { x -= b.x; y -= b.y; }
+    // Multiplicación por un escalar
+    P operator * (ll k) const { return P{x * k, y * k}; }
+    // Producto Punto (Dot Product) -> a . b = |a||b|cos(theta)
+    // Utilidad: Proyecciones, ver si un ángulo es agudo (>0), recto (=0) u obtuso (<0)
+    ll dot(const P& b) const { return x * b.x + y * b.y; }
+    // Producto Cruz (Cross Product) -> a x b = |a||b|sin(theta)
+    // Utilidad: Áreas, ver orientaciones y giros
+    ll operator * (const P& b) const { return x * b.y - y * b.x; }
+    // Magnitud al cuadrado (evita usar sqrt y floats)
+    ll norm() const { return x * x + y * y; }
+    // Comparadores (Ordena puntos y puede usar std::sort)
+    // Ordena de izquierda a derecha, y abajo hacia arriba
+    bool operator < (const P& b) const {
+        return make_pair(x,y) < make_pair(b.x, b.y);
+    }
+    bool operator == (const P& b) const {
+        return x == b.x && y == b.y;
+    }
+};
+\end{lstlisting}
+
+\subsubsection{Point in Polygon (Ray Casting)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Point in Polygon (Ray Casting)\\
+Author: botellot / ICPC BRO\\
+Description: Checks if a point P is INSIDE (1), OUTSIDE (0), or on the BOUNDARY (2) of a simple polygon.\\
+Uses a ray to infinity shifted by X+1 to completely avoid vertex-intersection edge cases.\\
+Needs vertices of polygon ordered clockwise or anticlockwise.\\
+Complexity: O(N) per query, where N is the number of polygon vertices.\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct P {
+    ll x, y;
+    void read() { cin >> x >> y; }
+    P operator - (const P& b) const { return {x - b.x, y - b.y}; }
+    __int128 operator * (const P& b) const { return (__int128)x * b.y - (__int128)y * b.x; }
+};
+// Determina si el punto c esta sobre el segmento ab
+bool in_segment(P a, P b, P c) {
+    if ((a - c) * (b - c) != 0) return false; // No son colineales
+    return min(a.x, b.x) <= c.x && c.x <= max(a.x, b.x) &&
+           min(a.y, b.y) <= c.y && c.y <= max(a.y, b.y);
+}
+// Interseccion de segmentos
+bool intersect(P p1, P p2, P p3, P p4) {
+    if ((p4 - p3) * (p2 - p1) == 0) {
+        if ((p2 - p1) * (p3 - p1) != 0) return false;
+        for (int rep = 0; rep < 2; rep++) {
+            if (max(p1.x, p2.x) < min(p3.x, p4.x) || max(p1.y, p2.y) < min(p3.y, p4.y)) return false;
+            swap(p1, p3); swap(p2, p4);
+        }
+        return true;
+    }
+    for (int rep = 0; rep < 2; rep++) {
+        __int128 s1 = (p2 - p1) * (p3 - p1);
+        __int128 s2 = (p2 - p1) * (p4 - p1);
+        if ((s1 < 0 && s2 < 0) || (s1 > 0 && s2 > 0)) return false;
+        swap(p1, p3); swap(p2, p4);
+    }
+    return true;
+}
+// Retorna: 0 = OUTSIDE, 1 = INSIDE, 2 = BOUNDARY
+int point_in_polygon(const vector<P>& poly, P p) {
+    int n = poly.size();
+    int cnt = 0;
+    // Rayo al "infinito". El truco de p.x + 1 evita que el rayo cruce exactamente
+    // por un vertice entero del poligono, eliminando bugs de doble conteo.
+    P out = {p.x + 1, 2000000007LL}; 
+    for (int i = 0; i < n; i++) {
+        int j = (i + 1 == n) ? 0 : i + 1;
+        // 1. Si el punto esta sobre el borde de este segmento, terminar de inmediato
+        if (in_segment(poly[i], poly[j], p)) {
+            return 2; 
+        }
+        // 2. Contar intersecciones con el rayo
+        if (intersect(p, out, poly[i], poly[j])) {
+            cnt++;
+        }
+    }
+    // Impar = INSIDE, Par = OUTSIDE
+    return (cnt % 2 == 1) ? 1 : 0;
+}
+void solve() {
+    int n, m; 
+    if (!(cin >> n >> m)) return;
+    vector<P> polygon(n);
+    for (int i = 0; i < n; i++) polygon[i].read();
+    while (m--) {
+        P p; p.read();
+        int res = point_in_polygon(polygon, p);
+        if (res == 2) cout << "BOUNDARY\n";
+        else if (res == 1) cout << "INSIDE\n";
+        else cout << "OUTSIDE\n";
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Point Location vs Line}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Point Location vs Line\\
+Author: botellot / ICPC BRO\\
+Description: Returns orientation of P3 relative to vector P1-\textgreater{}P2.\\
+- LEFT (1): Giro Antihorario (Counter-Clockwise). Producto cruz \textgreater{} 0.\\
+- RIGHT (-1): Giro Horario (Clockwise). Producto cruz \textless{} 0.\\
+- TOUCH (0): Colineales / Sobre la misma linea. Producto cruz = 0.\\
+Complexity: O(1).\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct P {
+    ll x, y;
+    P operator - (const P& b) const { return {x - b.x, y - b.y}; }
+    ll operator * (const P& b) const { return x * b.y - y * b.x; }
+};
+int point_location(P p1, P p2, P p3) {
+    ll cp = (p2 - p1) * (p3 - p1);
+    if (cp < 0) return -1; // Horario / Derecha
+    if (cp > 0) return 1;  // Antihorario / Izquierda
+    return 0;              // Colineal
+}
+\end{lstlisting}
+
+\subsubsection{Polygon Area (Shoelace Formula)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Polygon Area (Shoelace Formula)\\
+Author: botellot / ICPC BRO\\
+Description: Computes twice the area of a simple polygon (convex or concave).\\
+Returns 2 * Area as long long to maintain absolute integer precision.\\
+Vertices must be given in clockwise or counter-clockwise order.\\
+Complexity: O(N) where N is the number of vertices.\\
+Usage:\\
+vector\textless{}P\textgreater{} poly = \{\{0,0\}, \{4,0\}, \{4,3\}\};\\
+ll double\_area = polygon\_double\_area(poly); // Returns 12\\
+double real\_area = double\_area / 2.0;       // 6.0\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct P {
+    ll x, y;
+    void read() {cin >> x >> y;}
+    ll operator * (const P& b) const {return x * b.y - y * b.x;}
+};
+// Retorna 2 * Area del poligono usando el producto cruz desde el origen
+ll polygon_double_area(const vector<P>& poly) {
+    int n = (int)poly.size();
+    ll area = 0LL;
+    for (int i = 0; i < n; i++) {
+        int next_idx = (i + 1 == n) ? 0 : i + 1;
+        area += poly[i] * poly[next_idx];
+    }
+    return abs(area);
+}
+void solve() {
+    int n; cin >> n;
+    vector<P> polygon(n);
+    for(P& p : polygon) {
+        p.read();
+    }
+    ll area = polygon_double_area(polygon);
+}
+\end{lstlisting}
+
+\subsubsection{Segment Intersection (Anti-Overflow Version)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Segment Intersection (Anti-Overflow Version)\\
+Author: botellot / ICPC BRO\\
+Description: Robustly checks if line segments P1P2 and P3P4 intersect.\\
+Uses \_\_int128 in cross product to strictly avoid overflow with coordinates up to 10\textasciicircum{}9.\\
+Handles general intersections, T-junctions, and collinear/overlapping segments.\\
+Complexity: O(1).\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct P {
+    ll x, y;
+    void read() {
+        cin >> x >> y;
+    }
+    P operator - (const P& b) const { 
+        return {x - b.x, y - b.y}; 
+    }
+    // Retorna __int128 para blindar multiplicaciones de coordenadas de hasta 10^9
+    __int128 operator * (const P& b) const { 
+        return (__int128)x * b.y - (__int128)y * b.x; 
+    }
+};
+bool intersect(P p1, P p2, P p3, P p4) {
+    // Caso 1: Los segmentos son paralelos o colineales
+    if ((p4 - p3) * (p2 - p1) == 0) {
+        // Si no son colineales (paralelos en distintas lineas), no hay interseccion
+        if ((p2 - p1) * (p3 - p1) != 0) return false;
+        // Si son colineales, revisamos el traslape de sus cajas contenedoreras
+        for (int rep = 0; rep < 2; rep++) {
+            if (max(p1.x, p2.x) < min(p3.x, p4.x) || max(p1.y, p2.y) < min(p3.y, p4.y)) {
+                return false;
+            }
+            swap(p1, p3); swap(p2, p4);
+        }
+        return true; 
+    }
+    // Caso 2: No paralelos (Straddle Test con loop y swap)
+    for (int rep = 0; rep < 2; rep++) {
+        // s1 y s2 guardan los signos de orientacion usando __int128
+        __int128 s1 = (p2 - p1) * (p3 - p1);
+        __int128 s2 = (p2 - p1) * (p4 - p1);
+        // Se descarta si ambos puntos estan estrictamente del mismo lado
+        if ((s1 < 0 && s2 < 0) || (s1 > 0 && s2 > 0)) return false;
+        swap(p1, p3); swap(p2, p4);
+    }
+    return true;
+}
+void solve() {
+    P p1, p2, p3, p4;
+    p1.read(); p2.read(); p3.read(); p4.read();
+    if (intersect(p1, p2, p3, p4)) {
+        cout << "YES\n";
+    } else {
+        cout << "NO\n";
+    }
+}
+    return 0;
+}
+\end{lstlisting}
+
+\subsection{Teoria Juegos}
+
+\subsection{Teoria Numeros}
+
+\subsubsection{BigInt Operations (Unsigned)}
+\begin{flushleft}
+\footnotesize\ttfamily
+Description: Basic BigInt structure for positive integers using base 10\textasciicircum{}9.\\
+* * Complexity:\\
+- Addition/Subtraction: O(N) where N is number of nodes (digits/9).\\
+- Multi-Int Multiply/Divide/Mod: O(N).\\
+- BigInt Multiply: O(N * M) quadratic. Fails if total digits \textgreater{} 10\textasciicircum{}5.\\
+- String Conversion: O(L) where L is string length.\\
+* Limitations:\\
+- Only supports non-negative integers.\\
+- less\_lnum assumes a \textgreater{}= b (no negative result support).\\
+- Division and Modulo are only by 'long long' scalars, not BigInt/BigInt.\\
+- Multiplication is not FFT-optimized.\\
+Provides fast I/O and linear operations for small/medium inputs.\\
+Author: botellot / ICPC BRO\\
+Title: BigInt Operations (Unsigned)\\
+* Usage:\\
+BigInt a("123456789123456789"), b(100);\\
+BigInt c = prod\_lnum\_int(a, 5);\\
+ll remainder = mod\_lnum\_int(a, 1e9+7);\\
+\end{flushleft}
+
+\begin{lstlisting}
+struct BigInt {
+    static const int BASE = 1e9;
+    vector<int> nodes;
+    BigInt() {}
+    BigInt(long long v) {
+        if (v == 0) nodes.push_back(0);
+        while (v > 0) {
+            nodes.push_back(v % BASE);
+            v /= BASE;
+        }
+    }
+    BigInt(string s) {
+        for (int i = (int)s.length(); i > 0; i -= 9) {
+            if (i < 9)
+                nodes.push_back(stoi(s.substr(0, i)));
+            else
+                nodes.push_back(stoi(s.substr(i - 9, 9)));
+        }
+        trim();
+    }
+    void trim() {
+        while (nodes.size() > 1 && nodes.back() == 0)
+            nodes.pop_back();
+        if (nodes.empty()) nodes.push_back(0);
+    }
+};
+// --- OPERACIONES EXTERNAS ---
+// O(N) - Suma estándar con carry
+BigInt sum_lnum(const BigInt& a, const BigInt& b) {
+    BigInt res = a;
+    int carry = 0;
+    for (size_t i = 0; i < max(res.nodes.size(), b.nodes.size()) || carry; ++i) {
+        if (i == res.nodes.size()) res.nodes.push_back(0);
+        long long cur = (long long)res.nodes[i] + carry + (i < b.nodes.size() ? b.nodes[i] : 0);
+        res.nodes[i] = cur % BigInt::BASE;
+        carry = cur / BigInt::BASE;
+    }
+    return res;
+}
+// O(N) - Resta estándar (Asume a >= b)
+BigInt less_lnum(const BigInt& a, const BigInt& b) {
+    BigInt res = a;
+    int carry = 0;
+    for (size_t i = 0; i < b.nodes.size() || carry; ++i) {
+        long long cur = res.nodes[i] - carry - (i < b.nodes.size() ? b.nodes[i] : 0);
+        carry = cur < 0;
+        if (carry) cur += BigInt::BASE;
+        res.nodes[i] = (int)cur;
+    }
+    res.trim();
+    return res;
+}
+// O(N) - Multiplicación por escalar
+BigInt prod_lnum_int(const BigInt& a, ll v) {
+    if (v == 0) return BigInt(0);
+    BigInt res = a;
+    ll carry = 0;
+    for (size_t i = 0; i < res.nodes.size() || carry; ++i) {
+        if (i == res.nodes.size()) res.nodes.push_back(0);
+        long long cur = res.nodes[i] * 1LL * v + carry;
+        res.nodes[i] = cur % BigInt::BASE;
+        carry = cur / BigInt::BASE;
+    }
+    res.trim();
+    return res;
+}
+// O(N*M) - Multiplicación BigInt * BigInt
+BigInt prod_lnum(const BigInt& a, const BigInt& b) {
+    BigInt res;
+    res.nodes.resize(a.nodes.size() + b.nodes.size(), 0);
+    for (size_t i = 0; i < a.nodes.size(); ++i) {
+        ll carry = 0;
+        for (size_t j = 0; j < b.nodes.size() || carry; ++j) {
+            long long cur = res.nodes[i + j] +
+                            a.nodes[i] * 1LL * (j < b.nodes.size() ? b.nodes[j] : 0) + carry;
+            res.nodes[i + j] = cur % BigInt::BASE;
+            carry = cur / BigInt::BASE;
+        }
+    }
+    res.trim();
+    return res;
+}
+// O(N) - División por escalar
+BigInt div_lnum_int(const BigInt& a, ll v) {
+    BigInt res = a;
+    ll carry = 0;
+    for (int i = (int)res.nodes.size() - 1; i >= 0; --i) {
+        long long cur = res.nodes[i] + carry * 1LL * BigInt::BASE;
+        res.nodes[i] = (int)(cur / v);
+        carry = cur % v;
+    }
+    res.trim();
+    return res;
+}
+// O(N) - Módulo por escalar
+ll mod_lnum_int(const BigInt& a, ll v) {
+    ll m = 0;
+    for (int i = (int)a.nodes.size() - 1; i >= 0; --i)
+        m = (a.nodes[i] + m * 1LL * BigInt::BASE) % v;
+    return m;
+}
+// O(N) - Print formateado con ceros a la izquierda para la base
+void print(const BigInt& a) {
+    if (a.nodes.empty()) { printf("0\n"); return; }
+    printf("%d", a.nodes.back());
+    for (int i = (int)a.nodes.size() - 2; i >= 0; --i)
+        printf("%09d", a.nodes[i]);
+    printf("\n");
+}
+\end{lstlisting}
+
+\subsubsection{Prime Sieve}
+\begin{flushleft}
+\footnotesize\ttfamily
+Title: Prime Sieve\\
+Description: Criba para encontrar primos menores a n y contar primos en segmento [L,R]\\
+Author: bot\\
+\end{flushleft}
+
+\begin{lstlisting}
+//
+void criba_n(int n){
+    vector<bool> is_prime(n, true);
+    is_prime[0] = is_prime[1] = false;
+    for (int i = 2; i <= n; i++) {
+        if (is_prime[i] && (long long)i * i <= n) {
+            for (int j = i * i; j <= n; j += i)
+                is_prime[j] = false;
+        }
+    }
+}
+// Cuenta primos en rango con L hasta 1e12 y R-L~1e7
+vector<char> segmentedSieve(long long L, long long R) {
+    // generate all primes up to sqrt(R)
+    long long lim = sqrt(R);
+    vector<char> mark(lim + 1, false);
+    vector<long long> primes;
+    for (long long i = 2; i <= lim; ++i) {
+        if (!mark[i]) {
+            primes.emplace_back(i);
+            for (long long j = i * i; j <= lim; j += i)
+                mark[j] = true;
+        }
+    }
+    vector<char> isPrime(R - L + 1, true);
+    for (long long i : primes)
+        for (long long j = max(i * i, (L + i - 1) / i * i); j <= R; j += i)
+            isPrime[j - L] = false;
+    if (L == 1)
+        isPrime[0] = false;
+    return isPrime;
+}
+\end{lstlisting}
+
+\section{Strings}
+
+
+
+\end{document}

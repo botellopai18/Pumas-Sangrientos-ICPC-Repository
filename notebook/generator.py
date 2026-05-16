@@ -7,104 +7,158 @@ CODE_DIR = 'code'
 TEMPLATE_FILE = 'template.tex'
 OUTPUT_FILE = 'notebook.tex'
 
-# Patrones de "Boilerplate" que queremos eliminar de los códigos específicos
 BOILERPLATE_PATTERNS = [
-    r'#include\s*<.*>',            # Librerías
-    r'using\s+namespace\s+std;',    # Namespace
-    r'typedef\s+.*;',               # Typedefs
-    r'#define\s+.*',                # Macros
-    r'void\s+fast_io\s*\([^)]*\)\s*\{[^\}]*\}', # Función fast_io completa
-    r'const\s+ll\s+m\s*=\s*.*;',    # Opcional: constantes comunes como el MOD
-    r'ios_base::sync_with_stdio.*;', # Líneas de fast_io sueltas
+    r'#include\s*<.*>',
+    r'using\s+namespace\s+std;',
+    r'typedef\s+.*;',
+    r'#define\s+.*',
+    r'void\s+fast_io\s*\([^)]*\)\s*\{[^\}]*\}',
+    r'const\s+ll\s+m\s*=\s*.*;',
+    r'ios_base::sync_with_stdio.*;',
     r'cin\.tie.*;',
     r'cout\.tie.*;'
 ]
 
 def clean_code_content(content, is_template=False):
-    """Elimina metadatos y código repetitivo (boilerplate)."""
-    # 1. Eliminar el bloque de comentarios de metadatos /** ... */
-    content = re.sub(r'/\*\*.*?\*/', '', content, flags=re.DOTALL)
-    
-    if is_template:
-        return content.strip()
-
-    # 2. Eliminar líneas de boilerplate definidas arriba
+    # Eliminar cualquier bloque de comentario /* ... */ o /** ... */ al inicio
+    content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+    if is_template: return content.strip()
     for pattern in BOILERPLATE_PATTERNS:
         content = re.sub(pattern, '', content, flags=re.IGNORECASE)
-
-    # 3. Eliminar la función main() estándar si está vacía o solo tiene solve()
-    # Este regex busca un main que solo llame a fast_io, solve o tenga return 0
     main_pattern = r'int\s+main\s*\(\s*\)\s*\{[^\}]*\}'
     content = re.sub(main_pattern, '', content, flags=re.DOTALL)
-
-    # Limpieza final de saltos de línea excesivos
     content = re.sub(r'\n\s*\n', '\n', content)
     return content.strip()
 
-def parse_metadata(content):
-    """Extrae Título, Descripción y Autor de los comentarios."""
-    title, description, author = None, "Sin descripción.", "Desconocido"
-    match = re.search(r'/\*\*(.*?)\*/', content, re.DOTALL)
+def parse_metadata_and_comment(content):
+    """Extrae el título y limpia el bloque completo de comentarios para usarlo como texto."""
+    title = None
+    full_comment = ""
+    
+    # Captura tanto /* como /**
+    match = re.search(r'/\*(.*?)\*/', content, re.DOTALL)
     if match:
         block = match.group(1)
+        
+        # Buscar el título específicamente para la sección de LaTeX
         t_match = re.search(r'\*\s*Title:\s*(.*)', block, re.IGNORECASE)
-        if t_match: title = t_match.group(1).strip()
-        a_match = re.search(r'\*\s*Author:\s*(.*)', block, re.IGNORECASE)
-        if a_match: author = a_match.group(1).strip()
-        d_match = re.search(r'\*\s*Description:\s*(.*)', block, re.IGNORECASE)
-        if d_match: description = d_match.group(1).strip()
-    return title, description, author
+        if t_match: 
+            title = t_match.group(1).strip()
+        
+        # Limpiar línea por línea quitando los asteriscos decorativos del inicio
+        cleaned_lines = []
+        for line in block.split('\n'):
+            line_str = line.strip()
+            if line_str.startswith('*'):
+                line_str = line_str[1:].strip()
+            cleaned_lines.append(line_str)
+            
+        full_comment = "\n".join(cleaned_lines).strip()
+        
+    return title, full_comment
 
-def compile_and_clean():
-    """Compila y limpia archivos temporales."""
-    print("Compilando PDF...")
-    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
-    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
+def format_comment_to_latex(text):
+    """Escapa caracteres especiales de LaTeX y formatea los saltos de línea."""
+    replacements = [
+        ('\\', r'\textbackslash{}'),
+        ('&', r'\&'),
+        ('%', r'\%'),
+        ('$', r'\$'),
+        ('#', r'\#'),
+        ('_', r'\_'),
+        ('{', r'\{'),
+        ('}', r'\}'),
+        ('~', r'\textasciitilde{}'),
+        ('^', r'\textasciicircum{}'),
+        ('<', r'\textless{}'),
+        ('>', r'\textgreater{}')
+    ]
     
-    base = os.path.splitext(OUTPUT_FILE)[0]
-    for ext in ['.aux', '.log', '.toc', '.out', '.tex']:
-        if os.path.exists(base + ext): os.remove(base + ext)
-    print("¡Proceso completado!")
+    lines = text.split('\n')
+    latex_lines = []
+    
+    for line in lines:
+        # Aplicar escapes de caracteres especiales
+        for key, val in replacements:
+            line = line.replace(key, val)
+        
+        # Si la línea está vacía, añadimos un espacio vertical para no romper LaTeX con dobles diagonales
+        if line.strip() == "":
+            latex_lines.append(r'\par\smallskip')
+        else:
+            latex_lines.append(line + r'\\')
+            
+    return '\n'.join(latex_lines)
+
+def process_file(file_path, file_name, level):
+    """Genera el bloque LaTeX para un archivo individual con su documentación."""
+    with open(file_path, 'r', encoding='utf-8') as f:
+        raw_content = f.read()
+    
+    is_main_template = "template" in file_name.lower()
+    title, full_comment = parse_metadata_and_comment(raw_content)
+    clean_code = clean_code_content(raw_content, is_template=is_main_template)
+    
+    if not title:
+        title = file_name.replace('_', ' ').split('.')[0].title()
+    
+    section_cmd = "subsection" if level == 2 else "subsubsection"
+    block = f"\\{section_cmd}{{{title}}}\n"
+    
+    # Si el archivo tiene un bloque de comentarios, lo inyectamos elegantemente como texto
+    if full_comment:
+        formatted_comment = format_comment_to_latex(full_comment)
+        block += f"\\begin{{flushleft}}\n"
+        block += f"\\footnotesize\\ttfamily\n"
+        block += f"{formatted_comment}\n"
+        block += f"\\end{{flushleft}}\n\n"
+    
+    block += f"\\begin{{lstlisting}}\n{clean_code}\n\\end{{lstlisting}}\n\n"
+    return block
 
 def generate_notebook():
     if not os.path.exists(CODE_DIR): return
     latex_content = ""
     
-    directories = sorted([d for d in os.listdir(CODE_DIR) if os.path.isdir(os.path.join(CODE_DIR, d))])
+    top_dirs = sorted([d for d in os.listdir(CODE_DIR) if os.path.isdir(os.path.join(CODE_DIR, d))])
     
-    for folder in directories:
+    for folder in top_dirs:
+        top_path = os.path.join(CODE_DIR, folder)
         latex_content += f"\\section{{{folder.replace('_', ' ').title()}}}\n\n"
-        folder_path = os.path.join(CODE_DIR, folder)
-        files = sorted([f for f in os.listdir(folder_path) if f.endswith(('.cpp', '.py', '.java'))])
         
-        for file in files:
-            file_path = os.path.join(folder_path, file)
-            with open(file_path, 'r', encoding='utf-8') as f:
-                raw_content = f.read()
-            
-            # Detectar si es el archivo de plantilla principal
-            is_main_template = "template" in file.lower()
-            
-            # Obtener metadatos y limpiar el código
-            m_title, desc, author = parse_metadata(raw_content)
-            clean_code = clean_code_content(raw_content, is_template=is_main_template)
-            
-            title = m_title if m_title else file.replace('_', ' ').replace('.cpp', '').title()
-            
-            # Escribir el código limpio a un archivo temporal para lstinputlisting
-            # o usar el comando directo de listings
-            latex_content += f"\\subsection{{{title}}}\n"
-            latex_content += f"\\textbf{{Autor:}} {author} \\\\\n"
-            latex_content += f"\\textbf{{Descripción:}} {desc}\n\n"
-            latex_content += f"\\begin{{lstlisting}}\n{clean_code}\n\\end{{lstlisting}}\n\n"
+        items = sorted(os.listdir(top_path))
+        
+        # 1. Procesar Subcarpetas (Nivel 2)
+        for item in items:
+            item_path = os.path.join(top_path, item)
+            if os.path.isdir(item_path):
+                latex_content += f"\\subsection{{{item.replace('_', ' ').title()}}}\n\n"
+                sub_files = sorted([f for f in os.listdir(item_path) if f.endswith(('.cpp', '.py', '.java'))])
+                for f in sub_files:
+                    latex_content += process_file(os.path.join(item_path, f), f, level=3)
+        
+        # 2. Procesar Archivos sueltos en la raíz de la sección
+        for item in items:
+            item_path = os.path.join(top_path, item)
+            if os.path.isfile(item_path) and item.endswith(('.cpp', '.py', '.java')):
+                latex_content += process_file(item_path, item, level=2)
 
     with open(TEMPLATE_FILE, 'r', encoding='utf-8') as f:
         template = f.read()
-    
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         f.write(template.replace('% == GENERATOR_CONTENT ==', latex_content))
     
     compile_and_clean()
+
+def compile_and_clean():
+    print("Compilando PDF...")
+    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
+    subprocess.run(['pdflatex', '-interaction=nonstopmode', OUTPUT_FILE], stdout=subprocess.DEVNULL)
+    
+    base = os.path.splitext(OUTPUT_FILE)[0]
+    for ext in ['.aux', '.log', '.toc', '.out']:
+        if os.path.exists(base + ext): os.remove(base + ext)
+    print("¡Proceso completado! Archivo: notebook.pdf")
 
 if __name__ == '__main__':
     generate_notebook()

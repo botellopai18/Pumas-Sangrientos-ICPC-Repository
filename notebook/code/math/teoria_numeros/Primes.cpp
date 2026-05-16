@@ -1,7 +1,7 @@
 /**
  * Title: Prime Sieve
- * Description: Criba para encontrar primos y contar primos en segmento
- * Author: Pumas Sangrientos
+ * Description: Criba para encontrar primos menores a n y contar primos en segmento [L,R]
+ * Author: bot
  */
 
 //#include <bits/stdc++.h>
